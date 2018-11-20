@@ -44,10 +44,10 @@ class Musica extends CI_Controller {
 					'id' => $idUsuario,
 					);
 				$this->session->set_userdata($usuario_data);
-				echo($this->session->userdata('id'));
-				echo("Admin");
+				#echo($this->session->userdata('id'));
+				#echo("Admin");
 				$this->load->view('musica/header');
-				$this->load->view('musica/info',$data);
+				$this->load->view('musica/inicioAdmin',$data);
 			}
 			elseif($idTipo_Usuario == 2){
 				#existe como Usuario
@@ -57,10 +57,8 @@ class Musica extends CI_Controller {
 					'id' => $idUsuario,
 					);
 				$this->session->set_userdata($usuario_data);
-				echo($this->session->userdata('id'));
-				echo("Usuario");
 				$this->load->view('musica/header');
-				$this->load->view('musica/info',$data);
+				$this->load->view('musica/inicioUsuario',$data);
 			}else{
 				#El usuario no existe
 				echo '<script>alert("Usuario sin registro");</script>';
@@ -69,5 +67,10 @@ class Musica extends CI_Controller {
 			}
 		}
 		
+	}
+	function Salir(){
+		$this->session->sess_destroy();
+		$this->load->view('musica/header');
+		$this->load->view('musica/principal');
 	}
 }
