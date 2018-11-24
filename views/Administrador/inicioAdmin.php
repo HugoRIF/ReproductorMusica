@@ -11,8 +11,8 @@
         <div class="collapse navbar-collapse" id="navbarTogglerDemo02">
             <div class="navbar-nav text-center">
                 <a class="nav-item nav-link" href="http://192.168.64.2/RPrueba/index.php/Administrador"  >Inicio</a>
-                <a class="nav-item nav-link " href="">Canciones</a>
-                <a class="nav-item nav-link" href="">Usuarios</a>
+                <a class="nav-item nav-link btn " onClick="Canciones()">Canciones</a>
+                <a class="nav-item nav-link btn" onClick="Usuarios()">Usuarios</a>
             </div>
             
         <div class="collapse navbar-collapse" id="navbarTogglerDemo02">
@@ -83,7 +83,7 @@
 				type: 'post',
 				data: {},
 				success: function (data) {
-					$( "#Body" ).replaceWith(data);
+					$( "#Body" ).html(data);
 				}
 			});
     	};
@@ -93,10 +93,22 @@
 				type: 'post',
 				data: {},
 				success: function (data) {
-					$( "#Body" ).replaceWith(data);
+					$( "#Body" ).html(data);
 				}
 			});
     	};
+        function VER_Artista(idArt) {
+            var id = idArt;
+    		$.ajax({
+				url: 'http://192.168.64.2/RPrueba/index.php/Administrador/Artista_Especifico/?idArtista='+id,
+				type: 'GET',
+				data: {},
+				success: function (data) {
+					$( "#Body" ).html(data);
+				}
+			});
+    	};
+        
     </script>
   </body>
 </html>
