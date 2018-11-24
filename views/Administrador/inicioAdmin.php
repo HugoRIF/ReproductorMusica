@@ -108,6 +108,17 @@
 				}
 			});
     	};
+        function Editar_U(idU) {
+            var id = idU;
+    		$.ajax({
+				url: 'http://192.168.64.2/RPrueba/index.php/Administrador/EditarU/?idUsuario='+id,
+				type: 'GET',
+				data: {},
+				success: function (data) {
+					$( "#Body" ).html(data);
+				}
+			});
+    	};
         
     </script>
   </body>

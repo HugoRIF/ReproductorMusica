@@ -25,18 +25,38 @@ class Administrador extends CI_Controller {
         return $ACancion;
 	}
 	public function Usuarios(){
-	$AUsuario=$this->load->view('Administrador/AdminUsuarios');
+	 $Sesionid=$this->session->userdata('id');
+	$datos=array(
+		'idUsuarios'=>$this->AdmiM->Mostrar_idUsuarios($Sesionid),
+		'nomUsuarios'=>$this->AdmiM->Mostrar_nomUsuarios($Sesionid),
+	);
+	$AUsuario=$this->load->view('Administrador/AdminUsuarios',$datos);
         return $AUsuario;
 	}
 	public function Artista_Especifico(){
 		$ArtistaID=$this->input->get('idArtista');
 		$data = array(
 			'ArtistaID' => $ArtistaID,
+			'Canciones' => $this->AdmiM->Mostrar_Canciones_Artista($ArtistaID),
 			'nomArtista' => $this->AdmiM->nomArtista_porID($ArtistaID),
-			'Albunes' => $this->AdmiM->Mostrar_Albunes_Artista($ArtistaID)
+			'AlbunesC' => $this->AdmiM->Mostrar_Album_ArrCancion($ArtistaID),
+			
 		);
 		
 	$AUsuario=$this->load->view('Administrador/ArtistaEsp',$data);
 		return $AUsuario;
 		}
+public function EditarU(){
+	$=$this->input->get('idArtista');
+	$data = array(
+		'ArtistaID' => $ArtistaID,
+		'Canciones' => $this->AdmiM->Mostrar_Canciones_Artista($ArtistaID),
+		'nomArtista' => $this->AdmiM->nomArtista_porID($ArtistaID),
+		'AlbunesC' => $this->AdmiM->Mostrar_Album_ArrCancion($ArtistaID),
+		
+	);
+	
+	$AUsuario=$this->load->view('Administrador/ArtistaEsp',$data);
+	return $AUsuario;
+}
 }

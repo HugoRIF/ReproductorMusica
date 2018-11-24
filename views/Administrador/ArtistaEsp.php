@@ -11,30 +11,27 @@
         <table class="table table-striped text-white text-left" > 
             <thead >
                 <tr class=" bg color5">
-                    <th scope="col" style="width:20%">Album</th>
-                    <th scope="col" style="width:20% ">Num Canciones</th>
-                    <th scope="col" style="width:20% ">Año</th>
+                    <th scope="col" style="width:20%">Cancion</th>
+                    <th scope="col" style="width:20% ">Album</th>
+                   
                 </tr>
             </thead>
             <tbody class=" bg color1 ">
 
 <?php
-$NombreAlbum=$Albunes[1];
-$NumCanciones=$Albunes[2];
-$AAlbum=$Albunes[3];
+$CancionesA=$Canciones;
+$Album=$AlbunesC;
 
 $i=0;
-foreach ($NombreAlbum as $array){
+foreach ($CancionesA as $array){
     if($i!=0){ 
         
     ?><tr>
        
         <td style="text-align:left" >
-        <?= $NombreAlbum[$i];?></td>
-        <td style="text-align:center">
-        <?= $NumCanciones[$i];?></td>
+        <?= $CancionesA[$i];?></td>
         <td style="text-align:left">
-        <?= $AAlbum[$i];$i++;?></td>
+        <?= $Album[$i];$i++;?></td>
             
     </tr>
         

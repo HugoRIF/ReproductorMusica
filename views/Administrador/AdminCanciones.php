@@ -1,12 +1,13 @@
 <section class="container py-3 mt-2 mb-2">
      <div class="row mt-2 mb-2 text-white">
-        <div class="col-sm-6 col-md-6">
-            <h1 class="h1 text-right d-none d-sm-block ">CANCIONES:</h1>
+        <div class=" col-6 col-sm-6 col-md-6 col-lg-6">
+            <h1 class="h1 text-center d-none d-sm-block ">CANCIONES:</h1>
             <h2 class="h2 text-left d-block d-sm-none">CANCIONES:</h2>
+            
                   
         </div>
-        <div class="col-sm-6 col-md-6 align-self-center">
-            <button class="btn color1 btn-lg border border-white rounded-circle text-white">+</button>
+        <div class=" col-4 col-sm-4 col-md-4 col-lg-4">
+            <button class="btn color1 btn-lg border border-white  text-white ">Agregar + </button>
         </div>
     </div>
     <div class="row mt-4 mb-4 ">

@@ -69,6 +69,35 @@ function nomArtista_porID($id){
    return $NombreA ;
    
 }
+public function Mostrar_Canciones_Artista($id){
+    $result=$this->db->query('SELECT `nombreCancion`
+                              FROM `Cancion`
+                              WHERE `idArtista`='.$id)->result();
+   $arrayNombreC = array('');
+   $i=0;
+    foreach ($result as $res) { 
+       array_push($arrayNombreC,$result[$i]->nombreCancion);
+       $i++;
+   }
+   return $arrayNombreC ;
+   
+}
+function Mostrar_Album_ArrCancion($id){
+    $result=$this->db->query('SELECT a.nombreAlbum
+                                FROM Cancion c, Album a 
+                                WHERE c.idArtista='.$id.'
+                                AND c.idAlbum = a.id ')->result();
+    $arrayNombreC = array('');
+    $i=0;
+    foreach ($result as $res) { 
+    array_push($arrayNombreC,$result[$i]->nombreAlbum);
+    $i++;
+    }  
+    
+    return  $arrayNombreC;
+   
+}
+
 function Mostrar_Albunes_Artista($id){
     $result=$this->db->query('SELECT nombreAlbum,añoAlbum,numCancAlbum 
                             FROM Album 
@@ -93,4 +122,33 @@ function Mostrar_Albunes_Artista($id){
    return $arrayInfoA ;
    
 }
+function Mostrar_idUsuarios($idSesion){
+    $result=$this->db->query('SELECT id
+                              FROM Usuario
+                              WHERE id!='.$idSesion.'
+                              ORDER BY `id` ')->result();
+   $arrayidU = array('');
+   $i=0;
+    foreach ($result as $res) { 
+       array_push($arrayidU,$result[$i]->id);
+       $i++;
+   }
+   return $arrayidU ;
+   
+}
+function Mostrar_nomUsuarios($idSesion){
+    $result=$this->db->query('SELECT nombreUsuario
+                              FROM Usuario
+                              WHERE id!='.$idSesion.'
+                              ORDER BY `id` ')->result();
+   $arrayidU = array('');
+   $i=0;
+    foreach ($result as $res) { 
+       array_push($arrayidU,$result[$i]->nombreUsuario);
+       $i++;
+   }
+   return $arrayidU ;
+   
+}
+
 }
