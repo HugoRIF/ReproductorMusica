@@ -32,7 +32,8 @@ foreach ($Canciones as $array){
         
     ?><tr>
        
-        <td style="text-align:left" onclick="VER_Artista(<?php echo($idArtistas[$i]) ?>)">
+        <td style="text-align:left" class="nav-item nav-link btn" 
+        onClick="VER_Artista(<?php echo($idArtistas[$i]) ?>)">
         <?= $Artistas[$i];?></td>
         <td style="text-align:left">
         <?= $Canciones[$i];?></td>

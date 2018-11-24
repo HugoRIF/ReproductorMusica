@@ -150,5 +150,57 @@ function Mostrar_nomUsuarios($idSesion){
    return $arrayidU ;
    
 }
+function Registrar_Usuario($data){
+    #Primero checo si el nombre de usuario NO esta ocupado
+    $queryChecaU=$this->db->query('SELECT nombreUsuario
+                                    FROM Usuario
+                                    WHERE nombreUsuario="'.$data['usuario'].'"');
+    if($queryChecaU->num_rows() > 0){
+        return 0;
+    }
+    else{
+
+            $queryTipo=$this->db->query('SELECT id
+                                    FROM TipoUsuario
+                                    WHERE nombreTipoUsuario="'.$data['tipo'].'"')->result();
+            $idTipo=$queryTipo[0]->id;
+
+            $result=$this->db->query('INSERT INTO Usuario(nombreUsuario, contraUsuario, idTipoUsuario)
+            VALUES ("'.$data['usuario'].'","'.$data['contra'].'",'.$idTipo.')');
+            return 1;
+        }
+   
+}
+function Editar_Usuario($data){
+    
+
+            $queryTipo=$this->db->query('SELECT id
+                                    FROM TipoUsuario
+                                    WHERE nombreTipoUsuario="'.$data['tipo'].'"')->result();
+            $idTipo=$queryTipo[0]->id;
+
+            $result=$this->db->query('UPDATE Usuario 
+                                        SET nombreUsuario="'.$data['nomU'].'",
+                                            `contraUsuario`="'.$data['contra'].'",
+                                            `idTipoUsuario`='.$idTipo.'
+                                        WHERE id='.$data['UsuarioID']);
+            
+        if($result){
+            return 1;
+        }else{
+            return 0;
+        }
+   
+}
+function Mostrar_nomUsuario_porID($id){
+    $result=$this->db->query('SELECT nombreUsuario
+                                FROM Usuario 
+                                WHERE id='.$id)->result();
+    $nomU=$result[0]->nombreUsuario;
+   
+    
+    return  $nomU;
+   
+}
 
 }

@@ -7,7 +7,7 @@
                   
         </div>
         <div class=" col-4 col-sm-4 col-md-4 col-lg-4">
-            <button class="btn color1 btn-lg border border-white  text-white ">Agregar + </button>
+            <button class="btn color1 btn-lg  border-white  text-white " onclick="AgregarUsuario()">Agregar + </button>
         </div>
     </div>
     <div class="row mt-4 mb-4 ">
@@ -34,14 +34,18 @@ foreach ($idU as $array){
         <?= $idU[$i];?></td>
         <td style="text-align:left">
         <?= $nomU[$i];?></td>
-        <td style="text-align:left" onclick="Editar_U(<?php echo($idU[$i]) ?>)">
-        <a class="navbar-brand" >
-            <img src="http://192.168.64.2/RPrueba/img/musica/Editar.png" width="40" height="40" class="d-inline-block align-top" >
+        <td style="text-align:left" >
+        <a class=" nav-link " href="#" >
+            <img src="http://192.168.64.2/RPrueba/img/musica/Editar.png"
+             width="40" height="40" class="d-inline-block align-center" 
+             onClick="Editar_U(<?php echo($idU[$i]) ?>)">
            
         </a></td>
         <td style="text-align:left">
-        <a class="navbar-brand" >
-            <img src="http://192.168.64.2/RPrueba/img/musica/eliminar.png" width="45" height="45" class="d-inline-block align-top" >
+        <a class=" nav-link " href="#" >
+            <img src="http://192.168.64.2/RPrueba/img/musica/eliminar.png"
+             width="40" height="40" class="d-inline-block align-center" 
+             onClick="Editar_U(<?php echo($idU[$i]) ?>)">
            
         </a><?php $i++; ?></td>
             

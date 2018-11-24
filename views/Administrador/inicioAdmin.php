@@ -119,7 +119,16 @@
 				}
 			});
     	};
-        
+        function AgregarUsuario() {
+    		$.ajax({
+				url: 'http://192.168.64.2/RPrueba/index.php/Administrador/AgregarU',
+				type: 'post',
+				data: {},
+				success: function (data) {
+					$( "#Body" ).html(data);
+				}
+			});
+    	};
     </script>
   </body>
 </html>

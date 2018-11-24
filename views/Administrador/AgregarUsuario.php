@@ -1,17 +1,15 @@
 <section class="container py-3 mt-2 mb-2">
      <div class="row mt-2 mb-2 text-white">
         <div class=" col-12 col-sm-12 col-md-12 col-lg-12">
-            <h1 class="h1 text-center d-none d-sm-block ">EDITAR USUARIO: <?= $nomU?></h1>
-            <h2 class="h2 text-left d-block d-sm-none">EDITAR USUARIO: <?= $nomU?></h2>
+            <h1 class="h1 text-center d-none d-sm-block ">REGISTRAR USUARIO:</h1>
+            <h2 class="h2 text-left d-block d-sm-none">REGISTRAR USUARIO:</h2>
             
                   
         </div>
         <br>  <br>  <br>  <br>  
         <div class="col-12 col-sm-12 col-md-12 ">
                     <section class="container">
-                            <form action="http://192.168.64.2/RPrueba/index.php/Administrador/Editar_Usuario" method="post">
-                                <input type="hidden"  value=<?php echo($UsuarioID) ?> name="idUE">
-                        
+                            <form action="http://192.168.64.2/RPrueba/index.php/Administrador/Agregar_Usuario_Nuevo" method="post">
                                 <div class="form-group row">
                                     <label for="" class="col-4  col-form-label d-none d-sm-block"><h3>Usuario:</h3></label>    
                                     <input type="text" placeholder="Escribe tu usuario aquí:" class="form-control col-8 col-sm-8 col-md-4" name="usuario">
@@ -19,7 +17,7 @@
                                 </div>
                                 <div class="form-group row">
                                     <label for="" class="col-4 col-form-label d-none d-sm-block"><h3>Contraseña:</h3></label>
-                                    <input type="text" placeholder="Escribe tu contraseña:" class="form-control col-8 col-sm-8 col-md-4" name="contra">
+                                    <input type="password" placeholder="Escribe tu contraseña:" class="form-control col-8 col-sm-8 col-md-4" name="contra">
                         
                                 </div>
                                 <div class="form-group row">
@@ -33,7 +31,7 @@
                                 <br>
                                     <center>
                                     <div class="form-group col-6 col-sm-6 col-md-6 col-lg-6 ">
-                                    <input type="submit"  class="btn-lg color1 text-white border-white" value="Editar" >
+                                        <input type="submit"  class="btn-lg color1 text-white border-white" value="Registrar">
                         
                                     </div>
                                 </div>
