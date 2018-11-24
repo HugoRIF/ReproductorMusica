@@ -12,7 +12,7 @@
             </div>
             <div class="row mt-2 mb-2 text-center">
                 <div class="col">
-                    <button class="btn color3 btn-lg border border-dark w-25" href="#">Usuarios</button>
+                    <button class="btn color3 btn-lg border border-dark w-25" onclick="Usuarios()">Usuarios</button>
                 </div>
             </div>
         </section>

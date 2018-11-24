@@ -4,7 +4,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 class Musica extends CI_Controller {
 	function __construct(){
 		parent::__construct();
-		$this->load->helper('form');
+		
 		$this->load->helper('url');
 		$this->load->model('LoginM');
 		$this->load->library('session');
@@ -23,14 +23,14 @@ class Musica extends CI_Controller {
 			);
 		#Validamos que no esten vacios los campos, se mandan alerts
 		if($data['usuario']==""){
-			echo '<script>alert("Ingresa un usuario");</script>';
 			$this->load->view('musica/header');
 			$this->load->view('musica/principal');
+			echo '<script>alert("Ingresa un usuario");</script>';
 		}
 		elseif($data['contra']==""){
-			echo '<script>alert("Ingresa una Contraseña");</script>';
 			$this->load->view('musica/header');
 			$this->load->view('musica/principal');
+			echo '<script>alert("Ingresa una Contraseña");</script>';
 		}
 		#Si no estan vacios...
 		else{
@@ -61,13 +61,13 @@ class Musica extends CI_Controller {
 				$this->load->view('Usuario/inicioUsuario',$data);
 			}else{
 				#El usuario no existe
-				echo '<script>alert("Usuario sin registro");</script>';
 				$this->load->view('musica/header');
 				$this->load->view('musica/principal');
+				echo '<script>alert("Usuario sin registro");</script>';
 			}
 		}
-		
 	}
+
 	function Salir(){
 		$this->session->sess_destroy();
 		$this->load->view('musica/header');

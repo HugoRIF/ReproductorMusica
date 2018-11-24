@@ -18,5 +18,13 @@ class Usuario extends CI_Controller {
 	$PL=$this->load->view('Usuario/Playlist');
         return $PL;
 	}
+	public function Reproductor(){
+		$RP = $this->load->view('Usuario/Repro');
+		return $RP;
+	}
+	public function CrearPlaylist(){
+		$CP = $this->load->view('Usuario/CrearPlay');
+		return $CP;
+	}
 	
 }

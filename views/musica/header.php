@@ -7,12 +7,12 @@
 
     <!-- Bootstrap CSS -->
     <!-- <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous"> -->
-    <link rel="stylesheet" href="http://192.168.64.2/RPrueba/css/bootstrap.css">
+    <link rel="stylesheet" href="http://localhost/test/css/bootstrap.css">
 
     <!-- Estilos en Css -->
     <style>
         .slider{
-        background: url("http://192.168.64.2/RPrueba/img/img3.jpg");
+        background: url("http://localhost/test/img/img3.jpg");
         height: 100vh;
         background-size: cover;
         background-position: center;
