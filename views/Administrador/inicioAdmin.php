@@ -118,7 +118,19 @@
 					$( "#Body" ).html(data);
 				}
 			});
+        };
+        function Eliminar_U(idU) {
+            var id = idU;
+    		$.ajax({
+				url: 'http://192.168.64.2/RPrueba/index.php/Administrador/EliminarU/?idUsuario='+id,
+				type: 'GET',
+				data: {},
+				success: function (data) {
+					$( "#Body" ).html(data);
+				}
+			});
     	};
+
         function AgregarUsuario() {
     		$.ajax({
 				url: 'http://192.168.64.2/RPrueba/index.php/Administrador/AgregarU',

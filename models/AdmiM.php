@@ -192,6 +192,45 @@ function Editar_Usuario($data){
         }
    
 }
+function Eliminar_Usuario($id){
+    $qTipo=$this->db->query('SELECT idTipoUsuario
+                                FROM Usuario
+                                WHERE id='.$id)->result();
+
+   $idTipo=$qTipo[0]->idTipoUsuario;
+if($idTipo==1){
+    $eliminarA=$this->db->query('DELETE FROM `Usuario` WHERE id='.$id);
+
+    return 1;
+}else{
+    $eliminarU_playlist=$this->db->query('SELECT id
+                                            FROM Playlist 
+                                            WHERE idUsuario='.$id)->result();
+    $arrayidpl = array('');
+    $i=0;
+    foreach ($eliminarU_playlist as $res) { 
+       array_push($arrayidpl,$eliminarU_playlist[$i]->id);
+       $i++;
+     }
+     $j=0;
+    foreach ($arrayidpl as $res) { 
+       
+        $eliminarpl_c=$this->db->query('DELETE FROM Playlist_Cancion WHERE idPlaylist='.$arrayidpl[$j]);
+       
+       $j++;
+     }
+     $k=0;
+     foreach ($arrayidpl as $res) { 
+        
+         $eliminarpl_c=$this->db->query('DELETE FROM Playlist WHERE id='.$arrayidpl[$k]);
+        
+        $k++;
+      }
+      $eliminarU=$this->db->query('DELETE FROM `Usuario` WHERE id='.$id);
+return 2;
+}
+
+}
 function Mostrar_nomUsuario_porID($id){
     $result=$this->db->query('SELECT nombreUsuario
                                 FROM Usuario 

@@ -45,7 +45,7 @@ foreach ($idU as $array){
         <a class=" nav-link " href="#" >
             <img src="http://192.168.64.2/RPrueba/img/musica/eliminar.png"
              width="40" height="40" class="d-inline-block align-center" 
-             onClick="Editar_U(<?php echo($idU[$i]) ?>)">
+             onClick="Eliminar_U(<?php echo($idU[$i]) ?>)">
            
         </a><?php $i++; ?></td>
             

@@ -14,6 +14,7 @@ class Administrador extends CI_Controller {
 		$this->load->view('Administrador/inicioAdmin');
     
 	}
+#Cargar vista con las CANCIONES--------------------------------------------------
 	public function Canciones(){
 	$datos=array(
 		'Nombre'=>$this->AdmiM->Mostrar_Canciones(),
@@ -24,6 +25,8 @@ class Administrador extends CI_Controller {
 	$ACancion=$this->load->view('Administrador/AdminCanciones',$datos);
         return $ACancion;
 	}
+
+#Cargar vista con los--------------------------------------------------
 	public function Usuarios(){
 	 $Sesionid=$this->session->userdata('id');
 	$datos=array(
@@ -46,63 +49,106 @@ class Administrador extends CI_Controller {
 	$AUsuario=$this->load->view('Administrador/ArtistaEsp',$data);
 		return $AUsuario;
 		}
-public function EditarU(){
+#Cargar vista con EDITAR USUARIO--------------------------------------------------
+	public function EditarU(){
+		$idUeditar=$this->input->get('idUsuario');
+		$data = array(
+			'UsuarioID' => $idUeditar,
+			'nomU' => $this->AdmiM->Mostrar_nomUsuario_porID($idUeditar),
+					
+		);
+		
+		$AUsuario=$this->load->view('Administrador/EditarUsuario',$data);
+		return $AUsuario;
+	}
+
+#RECIBIR datos con el usuario a EDITAR--------------------------------------------------
+	public function Editar_Usuario(){
+	
+		$data = array(
+			'UsuarioID' => $this->input->post('idUE'),
+			'nomU' => $this->input->post('usuario'),
+			'contra' => $this->input->post('contra'),
+			'tipo' => $this->input->post('Tipo'),
+		);
+		$respuesta=$this->AdmiM->Editar_Usuario($data);
+		if($data['nomU']==""){
+			echo '<script>alert("Ingresa un usuario");</script>';
+			$this->load->view('musica/header');
+			$this->load->view('Administrador/inicioAdmin');
+
+		}
+		elseif($data['contra']==""){
+			echo '<script>alert("Ingresa una Contraseña");</script>';
+			$this->load->view('musica/header');
+			$this->load->view('Administrador/inicioAdmin');
+
+		}
+		#Si no estan vacios...
+		else{
+		if($respuesta==1){
+			echo '<script>alert("Se actualizo el usuario");</script>';
+			$this->load->view('musica/header');
+			$this->load->view('Administrador/inicioAdmin');
+
+				
+		}else{
+			echo '<script>alert("No se pudo actualizar");</script>';
+			$this->load->view('musica/header');
+			$this->load->view('Administrador/inicioAdmin');
+
+		}
+		}
+	}
+#Cargar vista con ELIMINAR USUARIO--------------------------------------------------
+public function EliminarU(){
 	$idUeditar=$this->input->get('idUsuario');
 	$data = array(
 		'UsuarioID' => $idUeditar,
+		'PlaylistsID' => $this->AdmiM->Mostrar_nomUsuario_porID($idUeditar),
 		'nomU' => $this->AdmiM->Mostrar_nomUsuario_porID($idUeditar),
-				
+					
 	);
 	
-	$AUsuario=$this->load->view('Administrador/EditarUsuario',$data);
+	$AUsuario=$this->load->view('Administrador/EliminarUsuario',$data);
 	return $AUsuario;
 }
-public function Editar_Usuario(){
+#RECIBIR datos con el usuario a ELIMINAR--------------------------------------------------
+public function Eliminar_Usuario(){
 	
-	$data = array(
-		'UsuarioID' => $this->input->post('idUE'),
-		'nomU' => $this->input->post('usuario'),
-		'contra' => $this->input->post('contra'),
-		'tipo' => $this->input->post('Tipo'),
-	);
-	$respuesta=$this->AdmiM->Editar_Usuario($data);
-	if($data['nomU']==""){
-		echo '<script>alert("Ingresa un usuario");</script>';
-		$this->load->view('musica/header');
-		$this->load->view('Administrador/inicioAdmin');
-
-	}
-	elseif($data['contra']==""){
-		echo '<script>alert("Ingresa una Contraseña");</script>';
-		$this->load->view('musica/header');
-		$this->load->view('Administrador/inicioAdmin');
-
-	}
-	#Si no estan vacios...
-	else{
+	
+		$ID = $this->input->post('idUE');
+		
+	
+	$respuesta=$this->AdmiM->Eliminar_Usuario($ID);
 	if($respuesta==1){
-		echo '<script>alert("Se actualizo el usuario");</script>';
+		echo '<script>alert("Se Elimino el ADMINISTRADOR");</script>';
 		$this->load->view('musica/header');
 		$this->load->view('Administrador/inicioAdmin');
 
 			
+	}elseif($respuesta==2){
+		echo '<script>alert("Se Elimino el USUARIO");</script>';
+		$this->load->view('musica/header');
+		$this->load->view('Administrador/inicioAdmin');
+
 	}else{
-		echo '<script>alert("No se pudo actualizar");</script>';
+		echo '<script>alert("NO se puede eliminar, Intenta más tarde");</script>';
 		$this->load->view('musica/header');
 		$this->load->view('Administrador/inicioAdmin');
 
 	}
-	}
-       
-	
-	
 }
+
+#Cargar vista con AGREGAR USUARIO--------------------------------------------------
 public function AgregarU(){
 	$Sesionid=$this->session->userdata('id');
        
        $AUsuario=$this->load->view('Administrador/AgregarUsuario');
        return $AUsuario;
        }
+
+#RECIBIR DATOS para AGREGAR USUARIO--------------------------------------------------
 public function Agregar_Usuario_Nuevo(){
 	$data = array(
 		'usuario' => $this->input->post('usuario'),
