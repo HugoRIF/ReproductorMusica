@@ -34,7 +34,11 @@ class LoginM extends CI_Model{
 		
 		$idU = $query[0]->id;
 			return $idU;
-		
+	}
+	function nombreUsuario($userId){
+		$query = "SELECT nombreUsuario FROM usuario u WHERE u.id=".$userId;
+		$nombUsu = $this->db->query($query)->result()[0]->nombreUsuario;
+		return $nombUsu;
 	}
 	function InfoCanciones(){
 		$query = "SELECT nombreCancion, nombreArtista, nombreAlbum 
@@ -86,6 +90,11 @@ class LoginM extends CI_Model{
 		$nombreCan = $this->db->query($query)->result()[0]->nombreCancion;
 		return $nombreCan;
 	}
+	function direcccionCancion($cancionId){
+		$query = "SELECT direccionCancion FROM cancion c WHERE c.id =".$cancionId;
+		$dirCancion = $this->db->query($query)->result()[0]->direccionCancion;
+		return $dirCancion;
+	}
 	function InfoPlay($playId){
 		$data['idPlay'] = $playId;
 		$data['nombrePlay'] = $this->LoginM->nombrePlay($playId);
@@ -95,10 +104,20 @@ class LoginM extends CI_Model{
 			$aux['nomCan'] = $this->LoginM->nombreCancion($idCan->idCancion);
 			$aux['nomArt'] = $this->LoginM->nombreArtista($idCan->idCancion);
 			$aux['nomAlb'] = $this->LoginM->nombreAlbum($idCan->idCancion);
+			$aux['dirCan'] = $this->LoginM->direcccionCancion($idCan->idCancion);
 			array_push($info, $aux); 
 		}
 		$data['infoCanciones'] = $info;
 		return $data;
+	}
+	function insertPlay($playNom, $userId){
+		$query = "INSERT INTO playlist (nombrePlaylist,numCancPlaylist,idUsuario) 
+      				VALUES ('$playNom',1,'$userId')";
+      	$res = $this->db->query($query);
+      	if($res == 1)
+      		return 1;
+      	else
+      		return 0;
 	}
 	
 }

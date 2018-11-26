@@ -10,7 +10,7 @@
                         </div>
                         <div class="col-sm-12 col-md-12 align-self-center">
                             <section class="container">
-                                    <form action="" method="post">
+                                    <form action="http://localhost/test/index.php/Usuario/insertarPlay" method="post">
                                         <div class="form-group row">
                                             <label for="" class="col-4 col-form-label d-none d-sm-block">Nombre:</label>    
                                             <input type="text" placeholder="Nombre de la playlist:" class="form-control col-8" name="nombrePlay">

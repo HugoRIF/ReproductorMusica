@@ -13,7 +13,7 @@
 			<section class="col-5 text-center rounded color5 my-1 mx-4">
 				<div class="row my-1">
 					<div class="col-8 text-right my-1">
-						<h4 class="h4 my-1 text-white"><?= $nombrePlay ?></h4>
+						<h4 class="h4 my-1 text-white"><?= $play1['nombrePlay'] ?></h4>
 					</div>
 					<div class="col-4 text-right my-1">
 						<button class="btn btn-sm color3 my-1 mx-1 text-white rounded-left">►</button>
@@ -29,7 +29,7 @@
 						</tr>
 					</thead>
 					<tbody>
-						<?php foreach ($infoCanciones as $info) {?>
+						<?php foreach ($play1['infoCanciones'] as $info) {?>
 							<tr>
 		                    	<td><?= $info['nomCan'] ?></td>
 		                        <td><?= $info['nomArt'] ?></td>
@@ -101,7 +101,7 @@
 					</tbody>
 				</table>
 			</section>
-		<?php }else{ ?>
+		<?php }if($numPlay == 0) { ?>
 			<section class="col-8 text-center rounded my-1 mx-4">
 				<h1 class="h1">Aun no tienes playlist :( crea una :)</h1>
 			</section>

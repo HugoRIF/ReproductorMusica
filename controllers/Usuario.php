@@ -19,7 +19,7 @@ class Usuario extends CI_Controller {
 		$idsPlay = $this->LoginM->idsPlay($idUser);
 		if ($idsPlay->num_rows() == 1) {
 			$play1 = $idsPlay->result()[0]->id;
-			$data = $this->LoginM->InfoPlay($play1);
+			$data['play1'] = $this->LoginM->InfoPlay($play1);
 		}if ($idsPlay->num_rows() == 2){
 			$play1 = $idsPlay->result()[0]->id;
 			$play2 = $idsPlay->result()[1]->id;
@@ -32,8 +32,25 @@ class Usuario extends CI_Controller {
         return $PL;
 	}
 	public function Reproductor(){
-		$RP = $this->load->view('Usuario/Repro');
-		return $RP;
+		$idUser = $this->session->userdata('id');
+		$aux = $this->LoginM->numeroPlay($idUser);
+		$idsPlay = $this->LoginM->idsPlay($idUser);
+		if ($idsPlay->num_rows() == 1) {
+			$play1 = $idsPlay->result()[0]->id;
+			$data['play1'] = $this->LoginM->InfoPlay($play1);
+		}if ($idsPlay->num_rows() == 2){
+			$play1 = $idsPlay->result()[0]->id;
+			$play2 = $idsPlay->result()[1]->id;
+			$data['play1'] = $this->LoginM->InfoPlay($play1);
+			$data['play2'] = $this->LoginM->InfoPlay($play2);
+		}
+		
+		$data['numPlay'] = $aux;
+		$data['usuario'] = $this->LoginM->nombreUsuario($idUser);
+		$this->load->view('musica/header');
+		$this->load->view('Usuario/inicioUsuario',$data);
+		//$RP = $this->load->view('Usuario/inicioUsuario', $data);
+		//return $RP;
 	}
 	public function CrearPlaylist(){
 		$CP = $this->load->view('Usuario/CrearPlay');
@@ -56,5 +73,37 @@ class Usuario extends CI_Controller {
 
 		$data = $this->LoginM->InfoPlay($play1);
 		$this->load->view('Usuario/pruebas', $data);
+	}
+	public function insertarPlay(){
+		$obt = array(
+				'nombrePlay' => $this->input->post('nombrePlay'),
+			);
+		$idUser = $this->session->userdata('id');
+		if ($obt['nombrePlay']=="") {
+			echo '<script>alert("Ingresa un nombre a la playlist");</script>';
+		}else{
+			$r = $this->LoginM->insertPlay($obt['nombrePlay'], $idUser);
+			if($r == 1)
+				echo '<script>alert("Exito al crear playlist");</script>';
+			else
+				echo '<script>alert("Error al crear la playlist");</script>';
+		}
+		$aux = $this->LoginM->numeroPlay($idUser);
+		$idsPlay = $this->LoginM->idsPlay($idUser);
+		if ($idsPlay->num_rows() == 1) {
+			$play1 = $idsPlay->result()[0]->id;
+			$data['play1'] = $this->LoginM->InfoPlay($play1); 
+		}if ($idsPlay->num_rows() == 2){
+			$play1 = $idsPlay->result()[0]->id;
+			$play2 = $idsPlay->result()[1]->id;
+			$data['play1'] = $this->LoginM->InfoPlay($play1);
+			$data['play2'] = $this->LoginM->InfoPlay($play2);
+		}
+			
+		$data['numPlay'] = $aux;
+		$data['usuario'] = $this->LoginM->nombreUsuario($idUser);
+		$this->load->view('musica/header');
+		$this->load->view('Usuario/inicioUsuarioAct',$data);
+
 	}
 }

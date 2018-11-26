@@ -77,7 +77,6 @@
                         </ul>
                     </div>
                 </div>
-
             </div>
         </section>
     <?php }if($numPlay == 0) { ?>
