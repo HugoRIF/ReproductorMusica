@@ -10,13 +10,13 @@
                         </div>
                         <div class="col-sm-12 col-md-12 align-self-center">
                             <section class="container">
-                                    <form action="http://localhost/test/index.php/Musica/login" method="post">
+                                    <form action="" method="post">
                                         <div class="form-group row">
                                             <label for="" class="col-4 col-form-label d-none d-sm-block">Nombre:</label>    
                                             <input type="text" placeholder="Nombre de la playlist:" class="form-control col-8" name="nombrePlay">
                                         </div>
                                         <div class="form-group row float-right">
-                                            <button class="btn color1 text-white">Crear</button>
+                                            <button class="btn color1 text-white" href="#">Crear</button>
                                         </div>
                                    </form>
                             </section>
@@ -24,4 +24,4 @@
                     </div>
                 </div>
             </div>
-        </section>
+</section>

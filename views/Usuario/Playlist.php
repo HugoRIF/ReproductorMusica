@@ -4,57 +4,107 @@
 			<h1 class="h1 mr-4">Playlists</h1>
 		</div>
 		<div class="col-4 text-right">
-			<button class="btn btn-sm color1 mt-3 text-white" href="#" onClick="Crear()">Agregar</button>
+			<button class="btn btn-sm color1 mt-3 text-white" href="#" onClick="Crear()" id="btAgregarPlay"
+			<?php if ($numPlay>=2) {?> disabled <?php } ?> >Agregar</button>
 		</div>
 	</div>
 	<div class="container-fluid row justify-content-md-center">
-		<section class="col-5 text-center rounded color5 my-1 mx-4">
-			<div class="row my-1">
-				<div class="col-8 text-right my-1">
-					<h4 class="h4 my-1 text-white">Nombre-Playlist</h4>
+		<?php if($numPlay == 1) { ?>
+			<section class="col-5 text-center rounded color5 my-1 mx-4">
+				<div class="row my-1">
+					<div class="col-8 text-right my-1">
+						<h4 class="h4 my-1 text-white"><?= $nombrePlay ?></h4>
+					</div>
+					<div class="col-4 text-right my-1">
+						<button class="btn btn-sm color3 my-1 mx-1 text-white rounded-left">►</button>
+						<button class="btn btn-sm color1 my-1 mx-1 text-white rounded-right" onClick="Canciones()">+</button>
+					</div>
 				</div>
-				<div class="col-4 text-right my-1">
-					<button class="btn btn-sm color3 my-1 mx-1 text-white rounded-left">►</button>
-					<button class="btn btn-sm color1 my-1 mx-1 text-white rounded-right">+</button>
+				<table class="table mt-2 mb-1 color5 rounded text-white">
+					<thead class="thead">
+						<tr>
+							<th scope="col">Cancion:</th>
+							<th scope="col">Artista:</th>
+							<th scope="col">Album:</th>
+						</tr>
+					</thead>
+					<tbody>
+						<?php foreach ($infoCanciones as $info) {?>
+							<tr>
+		                    	<td><?= $info['nomCan'] ?></td>
+		                        <td><?= $info['nomArt'] ?></td>
+		                        <td><?= $info['nomAlb'] ?></td>
+	                    	</tr>
+						<?php	# code...
+						}  
+						?>
+					</tbody>
+				</table>
+			</section>
+		<?php } ?>
+		<?php if($numPlay == 2){ ?>
+			<section class="col-5 text-center rounded color5 my-1 mx-4">
+				<div class="row my-1">
+					<div class="col-8 text-right my-1">
+						<h4 class="h4 my-1 text-white"><?= $play1['nombrePlay'] ?></h4>
+					</div>
+					<div class="col-4 text-right my-1">
+						<button class="btn btn-sm color3 my-1 mx-1 text-white rounded-left">►</button>
+						<button class="btn btn-sm color1 my-1 mx-1 text-white rounded-right" onClick="Canciones()">+</button>
+					</div>
 				</div>
-			</div>
-			<ul class="list-group">
-				<li class="list-group-item color2">El triste</li>
-				<li class="list-group-item color2">Animal</li>
-				<li class="list-group-item color2">Happy?</li>
-				<li class="list-group-item color2">Arsenico</li>
-				<li class="list-group-item color2">Sera</li>
-				<li class="list-group-item color2">Almohada</li>
-				<li class="list-group-item color2">De Mil Amores</li>
-				<li class="list-group-item color2">Mi Vida</li>
-				<li class="list-group-item color2">Cuando te acuerdes de mi</li>
-				<li class="list-group-item color2">Cien Años</li>
-			</ul>
-			<div class="row color5 rounded">-</div>
-		</section>
-		<section class="col-5 text-center rounded color5 my-1 mx-4">
-			<div class="row my-1">
-				<div class="col-8 text-right my-1">
-					<h4 class="h4 my-1 text-white">Nombre-Playlist</h4>
+				<table class="table mt-2 mb-1 color5 rounded text-white">
+					<thead class="thead">
+						<tr>
+							<th scope="col">Cancion:</th>
+							<th scope="col">Artista:</th>
+							<th scope="col">Album:</th>
+						</tr>
+					</thead>
+					<tbody>
+						<?php foreach ($play1['infoCanciones'] as $info) {?>
+							<tr>
+		                    	<td><?= $info['nomCan'] ?></td>
+		                        <td><?= $info['nomArt'] ?></td>
+		                        <td><?= $info['nomAlb'] ?></td>
+	                    	</tr>
+						<?php } ?>
+					</tbody>
+				</table>
+			</section>
+			<section class="col-5 text-center rounded color5 my-1 mx-4">
+				<div class="row my-1">
+					<div class="col-8 text-right my-1">
+						<h4 class="h4 my-1 text-white"><?= $play2['nombrePlay'] ?></h4>
+					</div>
+					<div class="col-4 text-right my-1">
+						<button class="btn btn-sm color3 my-1 mx-1 text-white rounded-left">►</button>
+						<button class="btn btn-sm color1 my-1 mx-1 text-white rounded-right" onClick="Canciones()">+</button>
+					</div>
 				</div>
-				<div class="col-4 text-right my-1">
-					<button class="btn btn-sm color3 my-1 mx-1 text-white rounded-left">►</button>
-					<button class="btn btn-sm color1 my-1 mx-1 text-white rounded-right">+</button>
-				</div>
-			</div>
-			<ul class="list-group">
-				<li class="list-group-item color2">El triste</li>
-				<li class="list-group-item color2">Animal</li>
-				<li class="list-group-item color2">Happy?</li>
-				<li class="list-group-item color2">Arsenico</li>
-				<li class="list-group-item color2">Sera</li>
-				<li class="list-group-item color2">Almohada</li>
-				<li class="list-group-item color2">De Mil Amores</li>
-				<li class="list-group-item color2">Mi Vida</li>
-				<li class="list-group-item color2">Cuando te acuerdes de mi</li>
-				<li class="list-group-item color2">Cien Años</li>
-			</ul>
-			<div class="row color5 rounded">-</div>
-		</section>
+				<table class="table mt-2 mb-1 color5 rounded text-white">
+					<thead class="thead">
+						<tr>
+							<th scope="col">Cancion:</th>
+							<th scope="col">Artista:</th>
+							<th scope="col">Album:</th>
+						</tr>
+					</thead>
+					<tbody>
+						<?php foreach ($play2['infoCanciones'] as $info) {?>
+							<tr>
+		                    	<td><?= $info['nomCan'] ?></td>
+		                        <td><?= $info['nomArt'] ?></td>
+		                        <td><?= $info['nomAlb'] ?></td>
+	                    	</tr>
+						<?php } ?>
+					</tbody>
+				</table>
+			</section>
+		<?php }else{ ?>
+			<section class="col-8 text-center rounded my-1 mx-4">
+				<h1 class="h1">Aun no tienes playlist :( crea una :)</h1>
+			</section>
+		<?php } ?>
 	</div>
 </section>

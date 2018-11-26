@@ -21,7 +21,7 @@
                 </a>
             </div>
             <div class="d-flex flex-row justify-content-center">
-                <a href="http://localhost/test/index.php/Musica/Salir" class="btn btn-outline-warning ">Salir</a>
+                <a href="http://localhost/test/index.php/Musica/Salir" class="btn btn-outline-warning" id="idSalir">Salir</a>
             </div>
         </div>
 </nav>
@@ -77,6 +77,7 @@
 				success: function (data) {
 					$( "#Body" ).html(data);
                     $("#lbPlay").addClass("active");
+                    //$("#btAgregarPlay").attr("disabled", true);
 				}
 			});
     	};
@@ -94,6 +95,16 @@
         function Crear() {
             $.ajax({
                 url: 'http://localhost/test/index.php/Usuario/CrearPlaylist',
+                type: 'post',
+                data: {},
+                success: function (data) {
+                    $( "#Body" ).html(data);
+                }
+            });
+        };
+        function Canciones() {
+            $.ajax({
+                url: 'http://localhost/test/index.php/Usuario/CancionesDisp',
                 type: 'post',
                 data: {},
                 success: function (data) {
