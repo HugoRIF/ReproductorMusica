@@ -11,8 +11,8 @@
         <div class="collapse navbar-collapse" id="navbarTogglerDemo02">
             <div class="navbar-nav text-center">
                 <a class="nav-item nav-link" href="http://192.168.64.2/RPrueba/index.php/Administrador"  >Inicio</a>
-                <a class="nav-item nav-link " href="">Canciones</a>
-                <a class="nav-item nav-link" href="">Usuarios</a>
+                <a class="nav-item nav-link btn " onClick="Canciones()">Canciones</a>
+                <a class="nav-item nav-link btn" onClick="Usuarios()">Usuarios</a>
             </div>
             
         <div class="collapse navbar-collapse" id="navbarTogglerDemo02">
@@ -26,20 +26,27 @@
 
 <!--Inicio del Body-->
 <div class="container-fluid color4" id="Body">
-        <section class="container py-3 mt-2 mb-2">
-            <div class="row">
-                <div class="col-sm-12 col-md-12">
-                    <h1 class="h1 text-center ">Administrar:</h1>
-                </div>
-            </div>
-            <div class="row mt-2 mb-2 text-center">
-                <div class="col">
-                    <button class="btn color2 btn-lg border border-dark w-25" onclick="Canciones()">Canciones</button>
-                </div>
-            </div>
-            <div class="row mt-2 mb-2 text-center">
-                <div class="col">
-                    <button class="btn color3 btn-lg border border-dark w-25" onclick="Usuarios()">Usuarios</button>
+        <section class="container py-3 mt-2 mb-2" style="height: 75vh">
+            <div class="container h-100">
+                <div class="d-flex align-items-center justify-content-center h-100">
+                    <span class="clearfix"></span>
+                    <div class="center-block">
+                        <div class="row text-center">
+                           <div class="col-sm-12 col-md-12">
+                                <h1 class="h1 text-center text-withe ">Administrar:</h1>
+                            </div> 
+                        </div>
+                        <div class="row mt-2 mb-2 text-center">
+                            <div class="col">
+                                <button class="btn color2 btn-lg border border-dark w-75" onclick="Canciones()">Canciones</button>
+                            </div>
+                        </div>
+                        <div class="row mt-2 mb-2 text-center">
+                            <div class="col">
+                                <button class="btn color3 btn-lg border border-dark w-75" onclick="Usuarios()">Usuarios</button>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </section>
@@ -83,7 +90,7 @@
 				type: 'post',
 				data: {},
 				success: function (data) {
-					$( "#Body" ).replaceWith(data);
+					$( "#Body" ).html(data);
 				}
 			});
     	};
@@ -93,7 +100,61 @@
 				type: 'post',
 				data: {},
 				success: function (data) {
-					$( "#Body" ).replaceWith(data);
+					$( "#Body" ).html(data);
+				}
+			});
+    	};
+        function VER_Artista(idArt) {
+            var id = idArt;
+    		$.ajax({
+				url: 'http://192.168.64.2/RPrueba/index.php/Administrador/Artista_Especifico/?idArtista='+id,
+				type: 'GET',
+				data: {},
+				success: function (data) {
+					$( "#Body" ).html(data);
+				}
+			});
+    	};
+        function Editar_U(idU) {
+            var id = idU;
+    		$.ajax({
+				url: 'http://192.168.64.2/RPrueba/index.php/Administrador/EditarU/?idUsuario='+id,
+				type: 'GET',
+				data: {},
+				success: function (data) {
+					$( "#Body" ).html(data);
+				}
+			});
+        };
+        function Eliminar_U(idU) {
+            var id = idU;
+    		$.ajax({
+				url: 'http://192.168.64.2/RPrueba/index.php/Administrador/EliminarU/?idUsuario='+id,
+				type: 'GET',
+				data: {},
+				success: function (data) {
+					$( "#Body" ).html(data);
+				}
+			});
+    	};
+
+        function AgregarUsuario() {
+    		$.ajax({
+				url: 'http://192.168.64.2/RPrueba/index.php/Administrador/AgregarU',
+				type: 'post',
+				data: {},
+				success: function (data) {
+					$( "#Body" ).html(data);
+				}
+			});
+        };
+        function AgregarCancion() {
+    		$.ajax({
+				url: 'http://192.168.64.2/RPrueba/index.php/Administrador/AgregarC',
+				type: 'post',
+				data: {},
+				success: function (data) {
+					$( "#Body" ).html(data);
 				}
 			});
     	};
