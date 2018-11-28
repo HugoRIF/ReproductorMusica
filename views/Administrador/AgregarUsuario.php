@@ -9,7 +9,7 @@
         <br>  <br>  <br>  <br>  
         <div class="col-12 col-sm-12 col-md-12 ">
                     <section class="container">
-                            <form action="http://192.168.64.2/RPrueba/index.php/Administrador/Agregar_Usuario_Nuevo" method="post">
+                            <form action="<?= base_url() ?>index.php/Administrador/Agregar_Usuario_Nuevo" method="post">
                                 <div class="form-group row">
                                     <label for="" class="col-4  col-form-label d-none d-sm-block"><h3>Usuario:</h3></label>    
                                     <input type="text" placeholder="Escribe tu usuario aquí:" class="form-control col-8 col-sm-8 col-md-4" name="usuario">

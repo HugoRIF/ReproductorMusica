@@ -49,7 +49,7 @@ class LoginM extends CI_Model{
 		return $info;
 	}
 	function numeroPlay($userId){
-		$query = "SELECT id FROM Playlist p WHERE p.idUsuario =".$userId;
+		$query = "SELECT id FROM playlist p WHERE p.idUsuario =".$userId;
 		$numPlay = $this->db->query($query);
 		if ($numPlay->num_rows()) {
 			$aux = count($numPlay->result());
@@ -58,12 +58,12 @@ class LoginM extends CI_Model{
 			return 0;
 	}
 	function idsPlay($userId){
-		$query = "SELECT id FROM Playlist p WHERE p.idUsuario =".$userId;
+		$query = "SELECT id FROM playlist p WHERE p.idUsuario =".$userId;
 		$idsPlay = $this->db->query($query);
 		return $idsPlay;
 	}
 	function nombrePlay($playId){
-		$query = "SELECT nombrePlaylist FROM Playlist p WHERE p.id =".$playId;
+		$query = "SELECT nombrePlaylist FROM playlist p WHERE p.id =".$playId;
 		$nombrePlay = $this->db->query($query)->result()[0]->nombrePlaylist;
 		return $nombrePlay;
 	}

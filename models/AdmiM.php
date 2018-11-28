@@ -207,18 +207,22 @@ function Editar_Usuario($data){
 }
 function Eliminar_Usuario($id){
     $qTipo=$this->db->query('SELECT idTipoUsuario
-                                FROM Usuario
+                                FROM usuario
                                 WHERE id='.$id)->result();
 
    $idTipo=$qTipo[0]->idTipoUsuario;
 if($idTipo==1){
-    $eliminarA=$this->db->query('DELETE FROM `Usuario` WHERE id='.$id);
+    $eliminarA=$this->db->query('DELETE FROM `usuario` WHERE id='.$id);
 
     return 1;
 }else{
-    $eliminarU_playlist=$this->db->query('SELECT id
-                                            FROM Playlist 
+    $eliminarU_playlistif=$this->db->query('SELECT id
+                                            FROM playlist 
+                                            WHERE idUsuario='.$id);
+     $eliminarU_playlist=$this->db->query('SELECT id
+                                            FROM playlist 
                                             WHERE idUsuario='.$id)->result();
+    if($eliminarU_playlistif->num_rows()>0){
     $arrayidpl = array('');
     $i=0;
     foreach ($eliminarU_playlist as $res) { 
@@ -226,20 +230,21 @@ if($idTipo==1){
        $i++;
      }
      $j=0;
-    foreach ($arrayidpl as $res) { 
+    foreach ($eliminarU_playlist as $res) { 
        
-        $eliminarpl_c=$this->db->query('DELETE FROM Playlist_Cancion WHERE idPlaylist='.$arrayidpl[$j]);
+        $eliminarpl_c=$this->db->query('DELETE FROM playlist_cancion WHERE idPlaylist='.$res->id);
        
        $j++;
      }
      $k=0;
-     foreach ($arrayidpl as $res) { 
+     foreach ($eliminarU_playlist as $res) { 
         
-         $eliminarpl_c=$this->db->query('DELETE FROM Playlist WHERE id='.$arrayidpl[$k]);
+         $eliminarpl_c=$this->db->query('DELETE FROM playlist WHERE id='.$res->id);
         
         $k++;
       }
-      $eliminarU=$this->db->query('DELETE FROM `Usuario` WHERE id='.$id);
+      }
+      $eliminarU=$this->db->query('DELETE FROM `usuario` WHERE id='.$id);
 return 2;
 }
 
@@ -276,7 +281,7 @@ function Agregar_Cancion($Arr){
             }else{
                 #La CANCION no existe, INSERTAMOS
                 $InsertCancion=$this->db->query('INSERT INTO Cancion
-                                                 ( nombreCancion,idAlbum, idArtista,idGenero,direccionCancion)
+                                                 ( nombreCancion,idAlbum, idArtista,idGenero)
                                                  VALUES ("'.$Arr['Cancion'].'",
                                                             (SELECT id
                                                             FROM Album
@@ -286,8 +291,7 @@ function Agregar_Cancion($Arr){
                                                             WHERE nombreArtista="'.$Arr['Artista'].'"),
                                                             (SELECT id
                                                             FROM Genero
-                                                            WHERE nombreGenero="'.$Arr['Genero'].'"),
-                                                            "http://192.168.64.2/opt/lampp/htdocs/RPrueba/canciones/WhenYouWhereYoung.mp3" )');
+                                                            WHERE nombreGenero="'.$Arr['Genero'].'"))');
                 #Actualizo el numero de canciones en el album 
 
                 $ActNumCAnc=$this->db->query('UPDATE Album set numCancAlbum=numCancAlbum+1 WHERE nombreAlbum="'.$Arr['Album'].'"');
@@ -305,18 +309,17 @@ function Agregar_Cancion($Arr){
                                                             )');
             #insertamos cancion
             $InsertCancion=$this->db->query('INSERT INTO Cancion
-            ( nombreCancion,idAlbum, idArtista,idGenero,direccionCancion)
-            VALUES ("'.$Arr['Cancion'].'",
-                       (SELECT id
-                       FROM Album
-                       WHERE nombreAlbum="'.$Arr['Album'].'"),
-                       (SELECT id
-                       FROM Artista
-                       WHERE nombreArtista="'.$Arr['Artista'].'"),
-                       (SELECT id
-                       FROM Genero
-                       WHERE nombreGenero="'.$Arr['Genero'].'"),
-                       "http://192.168.64.2/opt/lampp/htdocs/RPrueba/canciones/WhenYouWhereYoung.mp3" )');
+                                                 ( nombreCancion,idAlbum, idArtista,idGenero)
+                                                 VALUES ("'.$Arr['Cancion'].'",
+                                                            (SELECT id
+                                                            FROM Album
+                                                            WHERE nombreAlbum="'.$Arr['Album'].'"),
+                                                            (SELECT id
+                                                            FROM Artista
+                                                            WHERE nombreArtista="'.$Arr['Artista'].'"),
+                                                            (SELECT id
+                                                            FROM Genero
+                                                            WHERE nombreGenero="'.$Arr['Genero'].'"))');
 
             return 2;
         }
@@ -336,21 +339,32 @@ function Agregar_Cancion($Arr){
                    )');
         #insertamos cancion
         $InsertCancion=$this->db->query('INSERT INTO Cancion
-        ( nombreCancion,idAlbum, idArtista,idGenero,direccionCancion)
-        VALUES ("'.$Arr['Cancion'].'",
-                   (SELECT id
-                   FROM Album
-                   WHERE nombreAlbum="'.$Arr['Album'].'"),
-                   (SELECT id
-                   FROM Artista
-                   WHERE nombreArtista="'.$Arr['Artista'].'"),
-                   (SELECT id
-                   FROM Genero
-                   WHERE nombreGenero="'.$Arr['Genero'].'"),
-                   "http://192.168.64.2/opt/lampp/htdocs/RPrueba/canciones/WhenYouWhereYoung.mp3" )');
+                                                 ( nombreCancion,idAlbum, idArtista,idGenero)
+                                                 VALUES ("'.$Arr['Cancion'].'",
+                                                            (SELECT id
+                                                            FROM Album
+                                                            WHERE nombreAlbum="'.$Arr['Album'].'"),
+                                                            (SELECT id
+                                                            FROM Artista
+                                                            WHERE nombreArtista="'.$Arr['Artista'].'"),
+                                                            (SELECT id
+                                                            FROM Genero
+                                                            WHERE nombreGenero="'.$Arr['Genero'].'"))');
 
         return 3;
     }
 }
-
+function Direccion_Cancion($direccion,$cancion){
+    //<script>console.log(<?= $direccion )</script>
+    //<script>console.log(<?= $cancion )</script>
+  $aux = "mp3/";
+    $this->db->query('UPDATE Cancion 
+                            SET direccionCancion = "'.$aux.$direccion.'"
+                            WHERE nombreCancion="'.$cancion.'"');
+    //<script>console.log(<?= $result )</script>
+   
+    
+    return  1;
+   
+}
 }

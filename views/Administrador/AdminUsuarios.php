@@ -36,14 +36,14 @@ foreach ($idU as $array){
         <?= $nomU[$i];?></td>
         <td style="text-align:left" >
         <a class=" nav-link " href="#" >
-            <img src="http://192.168.64.2/RPrueba/img/musica/Editar.png"
+            <img src="<?= base_url() ?>img/musica/Editar.png"
              width="40" height="40" class="d-inline-block align-center" 
              onClick="Editar_U(<?php echo($idU[$i]) ?>)">
            
         </a></td>
         <td style="text-align:left">
         <a class=" nav-link " href="#" >
-            <img src="http://192.168.64.2/RPrueba/img/musica/eliminar.png"
+            <img src="<?= base_url() ?>img/musica/eliminar.png"
              width="40" height="40" class="d-inline-block align-center" 
              onClick="Eliminar_U(<?php echo($idU[$i]) ?>)">
            

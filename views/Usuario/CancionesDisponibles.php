@@ -21,18 +21,18 @@
                         $i=0;
 
                         foreach ($infoCanciones->result() as $info) { 
-                            if($i!=0){ 
+                            //if($i!=0){ 
                             ?>
                                 <tr>
                                     <td><?= $info->nombreCancion ?></td>
                                     <td><?= $info->nombreArtista ?></td>
                                     <td><?= $info->nombreAlbum ?></td>
                                     <td><?= form_checkbox('Canciones'.$i,$info->nombreCancion);$i++;?></td>
-			
+            
                                 </tr>
                             <?php
-                            }
-                            else{$i++;}
+                            /*}
+                            else{$i++;}*/
                         }
                     }else
                         echo "<p>Error en la consulta del curso</p>";
@@ -42,7 +42,7 @@
         <div class="row justify-content-end">
             <?= form_hidden("totalD",$i-1);?>
             <?= form_hidden("idPl",$idpl);?>
-	        <?= form_submit("","Agregar",'class="btn btn-sm color1 mt-2 mr-3 text-white"');?>
-	        <?= form_close();?>
+            <?= form_submit("","Agregar",'class="btn btn-sm color1 mt-2 mr-3 text-white"');?>
+            <?= form_close();?>
         </div>
 </section>

@@ -16,12 +16,12 @@
                     </div>
             </div>
             <div class="navbar-nav mr-auto ml-auto text-center">
-                <a class="navbar-brand text-warning" href="http://localhost/test/index.php/Usuario/Reproductor" onClick="Repro()">
+                <a class="navbar-brand text-warning" href="<?= base_url() ?>index.php/Usuario/Reproductor" onClick="Repro()">
                     <h3>Reproductor</h3>
                 </a>
             </div>
             <div class="d-flex flex-row justify-content-center">
-                <a href="http://localhost/test/index.php/Musica/Salir" class="btn btn-outline-warning" id="idSalir">Salir</a>
+                <a href="<?= base_url() ?>index.php/Musica/Salir" class="btn btn-outline-warning" id="idSalir">Salir</a>
             </div>
         </div>
 </nav>
@@ -32,17 +32,17 @@
         <section class="container py-3 mt-2 mb-2">
             <div class="row ">
                 <div class="col-sm-12 col-md-6 text-center">
-                    <img src="http://localhost/test/img/musica/icono2.svg" width="65%" height="65%" class="mx-auto d-block" alt="Musica">
+                    <img src="<?= base_url() ?>img/musica/icono2.svg" width="65%" height="65%" class="mx-auto d-block" alt="Musica">
                     <h1 class="h1 text-center">Tienes una playlist</h1>
                     <audio id="player" controls=""></audio>
                 </div>
-                <div class="col-sm-12 col-md-6 text-center mt-4">
+                <div class="col-sm-12 col-md-6 text-center mt-5">
                     <div class="col-sm-10 col-md-10 mr-auto ml-auto">
                         <ul class="list-group" id="Play1" style="height: 250px; overflow-y: scroll;">
                             <li class="list-group-item color5 text-white"><?= $play1['nombrePlay'] ?></li>
                             <?php $id = 0; 
                             foreach ($play1['infoCanciones'] as $info){ ?>
-                                <li class="list-group-item" id="<?php echo $info['dirCan']; ?>" onClick="play(this)" name="fila"><?= $info['nomCan'] ?><?= $id ?></li>
+                                <li class="list-group-item" id="<?= base_url() ?><?= $info['dirCan']; ?>" onClick="play(this)" name="fila"><?= $info['nomCan'] ?></li>
                             <?php $id = $id + 1; } ?>
                         </ul>
                     </div>
@@ -53,17 +53,17 @@
         <section class="container py-3 mt-2 mb-2">
             <div class="row ">
                 <div class="col-sm-12 col-md-6 text-center">
-                    <img src="http://localhost/test/img/musica/icono2.svg" width="65%" height="65%" class="mx-auto d-block" alt="Musica">
+                    <img src="<?= base_url() ?>img/musica/icono2.svg" width="65%" height="65%" class="mx-auto d-block" alt="Musica">
                     <h1 class="h1 text-center">Tienes dos playlist</h1>
                     <audio id="player" controls=""></audio>
                 </div>
-                <div class="col-sm-12 col-md-6 text-center mt-4">
+                <div class="col-sm-12 col-md-6 text-center mt-5">
                     <div class="col-sm-10 col-md-10 mr-auto ml-auto">
                         <ul class="list-group" id="Play1" style="height: 250px; overflow-y: scroll;">
                             <li class="list-group-item color5 text-white"><?= $play1['nombrePlay'] ?></li>
                             <?php $id = 0; 
                             foreach ($play1['infoCanciones'] as $info){ ?>
-                                <li class="list-group-item" id="<?php echo $info['dirCan']; ?>" onClick="play(this)" name="fila"><?= $info['nomCan'] ?><?= $id ?></li>
+                                <li class="list-group-item" id="<?= base_url() ?><?= $info['dirCan']; ?>" onClick="play(this)" name="fila"><?= $info['nomCan'] ?></li>
                             <?php $id = $id + 1; } ?>
                         </ul>
                     </div>
@@ -72,7 +72,7 @@
                             <li class="list-group-item color5 text-white"><?= $play2['nombrePlay'] ?></li>
                             <?php $id = 0; 
                             foreach ($play2['infoCanciones'] as $info){ ?>
-                                <li class="list-group-item" id="<?php echo $info['dirCan']; ?>" onClick="play(this)" name="fila"><?= $info['nomCan'] ?><?= $id ?></li>
+                                <li class="list-group-item" id="<?= base_url() ?><?= $info['dirCan']; ?>" onClick="play(this)" name="fila"><?= $info['nomCan'] ?></li>
                             <?php $id = $id + 1; } ?>
                         </ul>
                     </div>
@@ -84,7 +84,7 @@
         <section class="container py-3 mt-2 mb-2">
             <div class="row ">
                 <div class="col-sm-12 col-md-12">
-                    <img src="http://localhost/test/img/musica/icono2.svg" width="55%" height="55%" class="mx-auto d-block" alt="Musica">
+                    <img src="<?= base_url() ?>img/musica/icono2.svg" width="55%" height="55%" class="mx-auto d-block" alt="Musica">
                     <h1 class="h1 text-center">No tienes playlist :(</h1>
                 </div>
             </div>
@@ -98,7 +98,7 @@
     <footer class="container-fluid color5">
         <div class="row text-white py-4 text-white">
             <div class="col-md-3">
-                <img src="http://localhost/test/img/musica/disco.svg" alt="" width="50px" height="auto" class="float-left mr-3">
+                <img src="<?= base_url() ?>img/musica/disco.svg" alt="" width="50px" height="auto" class="float-left mr-3">
                 <h4 class="lead">Escucha tu musica favorita!</h4>
                 <footer class="blockquote-footer">Reproductor de musica <cite title="Source Title">*****</cite></footer>
             </div>
@@ -121,12 +121,12 @@
 
 <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
-    <script src="http://localhost/test/js/bootstrap.js"></script>
+    <script src="<?= base_url() ?>js/bootstrap.js"></script>
     <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
     <script>
     	function PlayList() {
     		$.ajax({
-				url: 'http://localhost/test/index.php/Usuario/Playlist',
+				url: '<?= base_url() ?>index.php/Usuario/PlayList',
 				type: 'post',
 				data: {},
 				success: function (data) {
@@ -138,7 +138,7 @@
     	};
         function Repro() {
             $.ajax({
-                url: 'http://localhost/test/index.php/Usuario/Reproductor',
+                url: '<?= base_url() ?>index.php/Usuario/Reproductor',
                 type: 'post',
                 data: {},
                 success: function (data) {
@@ -149,7 +149,7 @@
         };
         function Crear() {
             $.ajax({
-                url: 'http://localhost/test/index.php/Usuario/CrearPlaylist',
+                url: '<?= base_url() ?>index.php/Usuario/CrearPlaylist',
                 type: 'post',
                 data: {},
                 success: function (data) {
@@ -157,9 +157,25 @@
                 }
             });
         };
+        /*function Canciones(elemento) {
+            var selected = elemento.id;
+            //console.log(typeof(selected));
+            var idPlay ={ 
+                "idP" : selected
+            };
+            //console.log(typeof idPlay);
+            $.ajax({
+                url: 'http://localhost/test/index.php/Usuario/CancionesDisp',
+                type: 'post',
+                data: idPlay,
+                success: function (data) {
+                    $( "#Body" ).html(data);
+                }
+            });
+        };*/
         function Canciones($idPL) {
             $.ajax({
-                url: 'http://localhost/test/index.php/Usuario/CancionesDisp/?idPL='+$idPL,
+                url: '<?= base_url() ?>index.php/Usuario/CancionesDisp/?idPL='+$idPL,
                 type: 'GET',
                 data: {},
                 success: function (data) {
@@ -193,6 +209,30 @@
             $('#player').attr('src', src);
             var playPromise = audio.play();
         };
+        /*function agrCan(elemento){
+            var idP = elemento.id;
+            var nomC = elemento.name;
+            console.log(idP);
+            console.log(nomC);
+            $("#"+idP).attr('disabled', true);
+            var info = { 
+                "idP" : nomC,
+                "nomCan": idP
+            };
+            console.log(info);
+
+            $.ajax({
+                url: 'http://localhost/test/index.php/Usuario/insCancion',
+                type: 'GET',
+                data: info,
+                success: function (data) {
+                    console.log("se mando con exito");
+                    //$( "#Body" ).html(data);
+                }
+            });
+            //elemento.attr('disabled', true);
+            //$("#btAgregarPlay").attr("disabled", true);
+        };*/
     </script>  
 </body>
 </html>

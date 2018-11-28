@@ -1,8 +1,8 @@
 <!-- Inicio del navbar -->
 
 <nav class="navbar navbar-expand navbar-dark color1 sticky-top">
-        <a class="navbar-brand" href="http://192.168.64.2/RPrueba/index.php/Musica">
-            <img src="http://192.168.64.2/RPrueba/img/musica/disco.svg" width="30" height="30" class="d-inline-block align-top" alt="Logo Musica">
+        <a class="navbar-brand" href="<?= base_url() ?>index.php/Musica">
+            <img src="<?= base_url() ?>img/musica/disco.svg" width="30" height="30" class="d-inline-block align-top" alt="Logo Musica">
             Reproductor
         </a>
         <button class="navbar-toggler navbar-toggler-right" type="button" data-toggle="collapse" data-target="#navbarTogglerDemo02" aria-controls="navbarTogglerDemo02" aria-expanded="false" aria-label="Toggle navigation">
@@ -17,11 +17,11 @@
             <div class="row ">
                 <div class="col-sm-12 col-md-6">
                     <h1 class="h1 text-center ">Reproductor</h1>
-                    <img src="http://192.168.64.2/RPrueba/img/musica/icono2.svg" width="70%" height="70%" class="mx-auto d-block" alt="Musica">
+                    <img src="<?= base_url() ?>img/musica/icono2.svg" width="70%" height="70%" class="mx-auto d-block" alt="Musica">
                 </div>
                 <div class="col-sm-12 col-md-6 align-self-center">
                     <section class="container">
-                            <form action="http://192.168.64.2/RPrueba/index.php/Musica/login" method="post">
+                            <form action="<?= base_url() ?>index.php/Musica/login" method="post">
                                 <div class="form-group row">
                                     <label for="" class="col-4 col-form-label d-none d-sm-block">Usuario:</label>    
                                     <input type="text" placeholder="Escribe tu usuario aquí:" class="form-control col-8" name="usuario">
@@ -32,8 +32,8 @@
                                     <input type="password" placeholder="Escribe tu contraseña:" class="form-control col-8" name="contra">
                         
                                     </div>
-                                <div class="form-group"><center>
-                                    <button class="btn color1">Ingresar</button>
+                                <div class="form-group row float-right"><center>
+                                    <button class="btn color1 text-white">Ingresar</button>
                             </center> </div>
                            </form>
                     </section>
@@ -48,7 +48,7 @@
     <footer class="container-fluid color5">
         <div class="row text-white py-4 text-white">
             <div class="col-md-3">
-                <img src="http://192.168.64.2/RPrueba/img/musica/disco.svg" alt="" width="50px" height="auto" class="float-left mr-3">
+                <img src="<?= base_url() ?>img/musica/disco.svg" alt="" width="50px" height="auto" class="float-left mr-3">
                 <h4 class="lead">Escucha tu musica favorita!</h4>
                 <footer class="blockquote-footer">Reproductor de musica <cite title="Source Title">*****</cite></footer>
             </div>
@@ -71,6 +71,6 @@
 
 <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
-    <script src="http://192.168.64.2/RPrueba/js/bootstrap.js"></script>
+    <script src="<?= base_url() ?>js/bootstrap.js"></script>
   </body>
 </html>

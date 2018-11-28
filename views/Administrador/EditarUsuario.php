@@ -9,7 +9,7 @@
         <br>  <br>  <br>  <br>  
         <div class="col-12 col-sm-12 col-md-12 ">
                     <section class="container">
-                            <form action="http://192.168.64.2/RPrueba/index.php/Administrador/Editar_Usuario" method="post">
+                            <form action="<?= base_url() ?>index.php/Administrador/Editar_Usuario" method="post">
                                 <input type="hidden"  value=<?php echo($UsuarioID) ?> name="idUE">
                         
                                 <div class="form-group row">

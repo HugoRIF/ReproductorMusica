@@ -1,5 +1,6 @@
 <?php
 defined('BASEPATH') OR exit('No direct script access allowed');
+
 class Usuario extends CI_Controller {
 	function __construct(){
 		parent::__construct();
@@ -7,7 +8,6 @@ class Usuario extends CI_Controller {
 		$this->load->helper('form');
 		$this->load->model('LoginM');
 		$this->load->library('session');
-		
 	}
 	public function index(){
 		$this->load->view('musica/header');
@@ -128,6 +128,7 @@ class Usuario extends CI_Controller {
 		);
 		$Agrego_Canciones=$this->LoginM->Guardar_Canciones_en_PlayList($datos);
 		echo '<script>alert("Canciones Agregadas");</script>';
+
 		$idUser = $this->session->userdata('id');
 		$aux = $this->LoginM->numeroPlay($idUser);
 		$idsPlay = $this->LoginM->idsPlay($idUser);
@@ -145,5 +146,45 @@ class Usuario extends CI_Controller {
 		$data['usuario'] = $this->LoginM->nombreUsuario($idUser);
 		$this->load->view('musica/header');
 		$this->load->view('Usuario/inicioUsuario',$data);
+		/*
+		$idUser = $this->session->userdata('id');
+		$aux = $this->LoginM->numeroPlay($idUser);
+		$idsPlay = $this->LoginM->idsPlay($idUser);
+		if ($idsPlay->num_rows() == 1) {
+			$play1 = $idsPlay->result()[0]->id;
+			$data['play1'] = $this->LoginM->InfoPlay($play1);
+		}if ($idsPlay->num_rows() == 2){
+			$play1 = $idsPlay->result()[0]->id;
+			$play2 = $idsPlay->result()[1]->id;
+			$data['play1'] = $this->LoginM->InfoPlay($play1);
+			$data['play2'] = $this->LoginM->InfoPlay($play2);
+		}
+		
+		$data['numPlay'] = $aux;
+		$data['usuario'] = $this->LoginM->nombreUsuario($idUser);
+		$this->load->view('musica/header');
+		$this->load->view('Usuario/inicioUsuario',$data);*/
 	}
+
+
+	/*public function insCancion(){
+		//print_r($this->input->post('idP'));
+		$idPlay = $this->input->get('idP');
+		$nombreCancion = $this->input->get('nomCan');
+		settype($idPlay, "integer");
+		/*if (isset($data['idPlay'])) {
+			echo "<script>alert(esta definida)</script>";
+		}else{
+			echo "<script>alert(NO esta definida)</script>";
+		}
+		//print_r($data['idPlay'];
+		//echo(gettype($data['idP']);
+		//print_r($data['nombreCancion'];
+		//echo(gettype($data['nombreCancion']);
+		$idCan = $this->LogiM->idCan($nombreCancion);
+		settype($idCan, "integer");
+		$r = $this->LogiM->insCanPlay($idPlay, $idCan);
+		$this->load->view('Usuario/Repro');
+	}*/
+
 }

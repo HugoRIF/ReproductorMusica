@@ -214,9 +214,9 @@ public function Agregar_Usuario_Nuevo(){
 	  -maximo ancho 1024
 	  -maximo alto 768
 	  */
-	  $config['upload_path'] = './canciones/';
+	  $config['upload_path'] = './mp3/';
 	  $config['allowed_types'] = 'mp3';
-	  $config['max_size'] = '1000000';
+	  $config['max_size'] = '0';
 	  $config['max_width']  = '1024';
 	  $config['max_height']  = '768';
     
@@ -231,9 +231,10 @@ public function Agregar_Usuario_Nuevo(){
 	  if ( ! $this->upload->do_upload())
 	  {
 	   /* error en la subida del archivo */
-    	   echo '<script>alert("UPPS Algo salio mal intenta de nuevo");</script>';
-	   $this->load->view('musica/header');
-	   $this->load->view('Administrador/inicioAdmin');
+	   echo($this->upload->display_errors());
+    	  // echo '<script>alert("UPPS Algo salio mal intenta de nuevo");</script>';
+	   		$this->load->view('musica/header');
+	   		$this->load->view('Administrador/inicioAdmin');
 	  }
 	  else
 	  {
@@ -256,10 +257,12 @@ public function Agregar_Usuario_Nuevo(){
 				
 				break;
 		}
-	   echo($datosC['Artista']);
+	   /*echo($datosC['Artista']);
 	   echo($datosC['Album']);
 	   echo($datosC['Cancion']);
-	   echo($datosC['Genero']);
+	   echo($datosC['Genero']);*/
+	   $nombreNuevo=$this->upload->data('file_name');
+	   $this->AdmiM->Direccion_Cancion($nombreNuevo,$datosC['Cancion']);
 		$this->load->view('musica/header');
 		$this->load->view('Administrador/inicioAdmin');
 	  }
