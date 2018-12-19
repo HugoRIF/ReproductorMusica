@@ -3,44 +3,53 @@ title __POST usuarios__
 start
 
 	
-if(Arreglo Usuario definido?) then (si)
-:Recibir Arreglo;
+if(nombre: definido \ncontrasenia: definido \n tipo_usuario: definido) then (si)
+:ValidarParametros(nombre,contrasenia,tipo_usuario);
 floating note left
-Datos de Usuario[]:
+Datos de Usuario_nuevo[]:
  nombre: no es vacio
  contrasenia: no es vacia
  tipo_usuario: no es vacio
 end note
-	if (Datos Validos?) then (Datos validos)
+	if (Parametros Validos?) then (si)
 
 
 
-		:Hacer Query ;
-		 note left: Hacer SELECT a la tabla 'usuario',\nrevisar si existe un usuario con el mismo nombre
+		:SELECT id FROM usuario WHERE nombre= Usuario_nuevo[nombre];
+		 note left: Revisar si existe un usuario con el mismo nombre
 		if (Query exitoso?) then (si)
 			if (Existe Usuario?) then (SI)
-				:Hacer query;
+				:INSERT INTO usuario(nombre,contrasenia,tipo_usuario) \n VALUES(Usuario_nuevo[nombre],Usuario_nuevo[contrasenia],Usuario_nuevo[tipo_usuario]);
 				note right
-					Hacer INSERT a la tabla 'usuario
+					Se hace el INSERT a la tabla usuario
+                                        con los datos obtenidos.
       			        end note
 				if (Query exitoso? ) then (si)
-					:crearRespuesta(201, "Usuario Agregado", data=[]);
+					:crearRespuesta(201, "Usuario Agregado", []);
 				else (no)
-					:crearRespuesta(202, "No se puede agregar Usuario", data=[]);
+					:crearRespuesta(202, "No se puede agregar Usuario", []);
 				endif
+floating note right
+crearRespuesta() genera el arreglo Respuesta=[
+    codigo
+    mensaje
+    data[]
+]
+con los parametros que s ele pasan.
+end note
 			else (NO)
-				:crearRespuesta(200, "Usuario Existe", data=[]);
+				:crearRespuesta(200, "Usuario Existe", []);
 			endif
 		else (no)
 			:crearRespuesta(404, "Error en la consulta", []);
 		endif
-	else (Datos invalidos)
+	else (no)
 		:crearRespuesta(400, "Error en los parametros", []);
 	endif
 	
 else (no)
 :crearRespuesta(400, "Error en los parametros", []);
 endif
-:response(ArregloResponse);
+:mandarRespuesta(Respuesta);
 stop
 @enduml

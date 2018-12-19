@@ -1,66 +1,84 @@
 @startuml
-title __GET usuarios__
+title _GET usuarios_
 start
 
 	
-if(nombre esta definido \n y contrasenia esta definido) then (si)
-:Recibe:nombre,contrasenia;
-floating note left
- Parametros:
+if(nombre_usuario esta definido \n y contrasenia esta definido) then (si)
+:validarParametros(nombre_usuario,contrasenia);
+note left
 	nombre_usuario: no es vacio
 	contrasenia: no es vacio
 end note
-	if (Parametros Validos?) then (Parametros validos)
+	if (Parametros Validos?) then (si)
 
-
-
-		:SELECT 'usuario';
-		 note left: Obtener: id, nombre, tipo_usuario\n usuario = resultQuery
+		:SELECT id, tipo_usuario FROM usuario WHERE nombre="nombre_usuario" AND contrasenia="contrasenia";
+		 note left:Del query se obtiene: id, tipo_usuario\n se crea usuario = [ id, nombre_usuario, tipo_usuario]
 		if (Query exitoso?) then (si)
-			if (Tipo del usuario?) then (USUARIO)
-				:Hacer query;
+			:verTipoUsuario(usuario);
+			if (Usuario?) then (si)
+				:SELECT p.id AS "Id Playlist", p.nombre AS "Nombre Playlist", c.id AS "Id\n Cancion", c.nombre AS "Nombre Cancion", a.nombre AS "Artista Cancion", al.nombre AS "Album Cancion"\n, c.direccion AS "Direccion Cancion" \nFROM playlist p JOIN playlist_con_canciones pc ON p.id = pc.id_playlist \nJOIN cancion c ON c.id = pc.id_cancion JOIN artista a ON c.id_artista = a.id JOIN album al ON c.id_album = al.id WHERE p.id_usuario = usuario[id];
 				note right
-					JOIN a 'playlist', 'cancion', 'artista','album','playlist_con_cancion'
-					Obtener:
-					playlist.id
-					playlists.nombre
-					cancion.nombre
-					cancion.direccion
-					artista.nombre
-					album.nombre 
-					playlists = resultQuery
+					Se espera obtener la informacion de las playlist del usuario logeado de la siguiente forma:
+					[ playlist1 = [ id, nombre, canciones = [ [ nombre, artista, album], [...]]],
+					  playlist2 = [ id, nombre, canciones = [ [ nombre, artista, album], [...]]]]
+					dicha info se agrega al arreglo usuario y debe quedar:
+					usuario = [id, nombre,
+								playlists = [ playlist1 = [ id, nombre, canciones = [ [ nombre, artista, album], [...]]],
+					  					playlist2 = [ id, nombre, canciones = [ [ nombre, artista, album], [...]]]]
+					  		]
 				end note
 				if (Query exitoso? ) then (si)
+					:contarPlaylist(usuario);
 					if (Tiene playlists?) then (si)
-						:crearRespuesta(200, "Usuario y tiene playlist", [usuario, playlists]);
+						:crearRespuesta(200, "Usuario y tiene playlist", usuario);
+						note right
+							Este metodo genera el arreglo 
+							Respuesta=[
+							    codigo = 200
+							    mensaje = "Usuario y tiene playlist"
+							    data = usuario
+							]
+						end note
 					else (no)
 						:crearRespuesta(204, "Usuario y no tiene playlist", usuario);
 					endif
 				else (no)
 					:crearRespuesta(404, "Error en la consulta", usuario);
 				endif
-			else (ADMINISTRADOR)
+			else (no)
 				:crearRespuesta(200, "Administrador", usuario);
 			endif
 		else (no)
 			:crearRespuesta(404, "Error en la consulta", []);
 		endif
-	else (Parametros invalidos)
+	else (no)
 		:crearRespuesta(400, "Error en los parametros", []);
 	endif
 	
 else (no)
-:Hace Query;
-note right
-SELECT * a la tabla Usuarios
-
-end note
-if (query Exitoso?) then (si)
-:crearRespuesta(200, "Usuarios Encontrados", resultQuery[...]);
-else (no)
-:crearRespuesta(404, "Error en la consulta", []);
+	:SELECT * FROM usuario;
+	note right
+	Obtener: id, nombre, tipo_usuario
+    se crea usuarios = [
+              usuario1= [id, nombre, tipo_usuario],
+              usuario2= [id, nombre, tipo_usuario],
+        		...]
+	end note
+	if (Query exitoso?) then (si)
+		:crearRespuesta(200, "Usuarios encontrados", usuarios);
+		note right
+			Este metodo genera el arreglo 
+			Respuesta=[
+			    codigo = 200
+			    mensaje = "Usuarios encontrados"
+			    data = usuarios
+			]
+		end note
+	else (no)
+		:crearRespuesta(404, "Error en la consulta", []);
+	endif
 endif
-endif
-:response(ArregloResponse);
+:mandarRespuesta(Respuesta);
 stop
+@endum
 @enduml

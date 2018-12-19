@@ -3,34 +3,42 @@ title __PUT usuarios__
 start
 
 	
-if(Arreglo Usuario definido?) then (si)
-:Recibir Arreglo;
+if(id: definido \n nombre: definido \n contrasenia: definido \n tipo_usuario: definido) then (si)
+:validarParametros(id,nombre,contrasenia,tipo_usuario);
 floating note left
-Datos:
-Los dats pueden estar vacios solo se modifican los que no esten vacios
+Validar Datos de Usuario[]:
+Los datos pueden estar vacios solo se modifican los que no esten vacios
+el id es el unico que debe estar lleno siempre
  id,
  nombre,
  contrasenia,
  tipo_usuario
+regresa los parametros que si existen
 end note
-	if (Datos Validos?) then (Datos validos)
+	if (Parametros Validos?) then (si)
 
-
-
-		:Hacer Query ;
+		:UPDATE usuario SET nombre, contrasenia, tipo_usuario WHERE id= Usuario[id] ;
 		 note left: Hacer UPDATE a la tabla 'usuario',\n Solo se modifican los datos llenos
 		if (Query exitoso?) then (si)
 			:crearRespuesta(200, "Usuario actualizado", []);
 		else (no)
 			:crearRespuesta(400, "No se puede actualizar", []);
+floating note right
+crearRespuesta() genera el arreglo Respuesta=[
+    codigo
+    mensaje
+    data[]
+]
+con los parametros que s ele pasan.
+end note
 		endif
-	else (Datos vacios)
+	else (no)
 		:crearRespuesta(200, "No se modifico nada", []);
 	endif
 	
 else (no)
 :crearRespuesta(404, "No se encontraron Datos", []);
 endif
-:response(ArregloResponse);
+:mandarRespuesta(Repuesta);
 stop
 @enduml
