@@ -1,0 +1,36 @@
+@startuml
+title __PUT usuarios__
+start
+
+	
+if(Arreglo Usuario definido?) then (si)
+:Recibir Arreglo;
+floating note left
+Datos:
+Los dats pueden estar vacios solo se modifican los que no esten vacios
+ id,
+ nombre,
+ contrasenia,
+ tipo_usuario
+end note
+	if (Datos Validos?) then (Datos validos)
+
+
+
+		:Hacer Query ;
+		 note left: Hacer UPDATE a la tabla 'usuario',\n Solo se modifican los datos llenos
+		if (Query exitoso?) then (si)
+			:crearRespuesta(200, "Usuario actualizado", []);
+		else (no)
+			:crearRespuesta(400, "No se puede actualizar", []);
+		endif
+	else (Datos vacios)
+		:crearRespuesta(200, "No se modifico nada", []);
+	endif
+	
+else (no)
+:crearRespuesta(404, "No se encontraron Datos", []);
+endif
+:response(ArregloResponse);
+stop
+@enduml

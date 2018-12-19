@@ -1,0 +1,149 @@
+@startuml
+title Crear Cancion
+
+start
+if(Arreglo Canion definido?) then (si)
+:Recibir Arreglo;
+floating note left
+Datos de Cancion[]:
+ nombre: no es vacio
+ album: no es vacia
+ artista: no es vacio
+ genero: no es vacio
+ direccion: no es vacio
+end note
+floating note left:  validar que todos los campos esten llenos
+if (Validar Datos) then (Datos validos)
+	:Hacer Query;
+	 note left
+		SELECT a la tabla 'artista'
+		Obtener:
+		artista.id Si existe el usario
+	end note
+	if (Query exitoso?) then (Si)
+		if (Exite el artista?) then (si)
+			:Hacer Query;
+			 note left
+		SELECT a la tabla 'album'
+		Obtener:
+		album.id Si existe el album
+	                end note
+                if(Query exitoso?) then (si)
+                    if (Existe Album) then (si) 
+                      :Hacer Query;
+			 note left
+		SELECT a la tabla 'cancion'
+		Obtener:
+		cancion.id Si existe la cancion
+	                end note
+               if (Query exitoso?) then (si)
+                if(Existe Cancion?) then (si)
+                        :crearRespuesta(200, "Cancion Existe", resultQuery);
+                 else (no) 
+                         :Hacer Query;
+note left
+		INSERT a la tabla 'cancion'
+		Obtener:
+		TRUE/FALSE
+	                end note
+if(Query Exitoso?) then (si)
+
+ :crearRespuesta(201, "Cancion Agregada");
+
+
+else(no)
+ :crearRespuesta(202, "Cancion No se puede agregar");
+endif
+                 endif
+               else (no)
+:crearRespuesta(404, "Error en la consulta", []);
+               endif
+                else (no)
+              :Hacer Query;
+			 note right
+		INSERT a la tabla 'album'
+		Obtener:
+		TRUE/FALSE
+	                end note
+if (Query Exitoso?) then (si)
+ :crearRespuesta(201, "Album Agregado");
+ :Hacer Query;
+note left
+		INSERT a la tabla 'cancion'
+		Obtener:
+		TRUE/FALSE
+	                end note
+if(Query Exitoso?) then (si)
+ :crearRespuesta(201, "Cancion Agregada");
+else(no)
+ :crearRespuesta(202, "Cancion No se puede agregar");
+endif
+
+else (no)
+ :crearRespuesta(202, "Album No se puede agregar");
+endif
+   endif
+	         else (No)
+			
+:crearRespuesta(400, "Error en el query", resultQuery);
+			        
+                         
+               
+		endif
+	else (No)
+		:Hacer Query ;
+ note left
+		                INSERT a la tabla 'artista'
+		                Obtener:
+		                TRUE o FALSE
+	                        end note
+                if (Query exitoso?) then (si)
+if(revisarRespuesta(resultQuery)) then (TRUE)
+:Hacer Query ;
+note left
+		                INSERT a la tabla 'album'
+		                Obtener:
+		                TRUE o FALSE
+	                        end note
+if(Query exitoso?) then (si)
+
+:Hacer Query ;
+note left
+		                INSERT a la tabla 'cancion'
+		                Obtener:
+		                TRUE o FALSE
+	                        end note
+
+
+if(Query exitoso?) then (si)
+:crearRespuesta(201, "Cancion Agregada", resultQuery);
+
+else (no)
+:crearRespuesta(202, "No se peude agregar cancion", resultQuery);
+
+endif
+else (no)
+:crearRespuesta(202, "No se peude agregar cancion", resultQuery);
+endif
+else(FALSE)
+:crearRespuesta(400, "Error en el query", resultQuery);
+endif
+               
+else(no)
+endif
+
+	endif
+else (Datos invalidos)
+	:crearRespuesta(404, "Error en la consulta", []);
+endif
+else (Parametros invalidos)
+:crearRespuesta(400, " Error en los parametros", []);
+
+endif
+else (no)
+:crearRespuesta(404, " No implementado", []);
+endif
+:manda response(ArrayResponse);
+
+stop
+@enduml

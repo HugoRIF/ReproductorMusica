@@ -1,0 +1,23 @@
+@startuml
+title __GET canciones__
+start
+
+	
+if(nombre esta definido \n artista esta definido \n album esta definido\n genero esta definido) then (si)
+:crearRespuesta(404, "No implementado", data=[]);
+	
+else (no)
+:Hace Query;
+note right
+SELECT * a la tabla canciones
+
+end note
+if (query Exitoso?) then (si)
+:crearRespuesta(200, "Canciones Encontradas", resultQuery[...]);
+else (no)
+:crearRespuesta(404, "Error en la consulta", []);
+endif
+endif
+:response(ArregloResponse);
+stop
+@enduml

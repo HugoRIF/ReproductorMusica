@@ -1,0 +1,36 @@
+@startuml
+title __DELETE usuarios__
+start
+
+	
+if(id esta definido) then (si)
+:Recibe:id;
+floating note left
+ Parametros:
+	id: no es vacio
+	
+end note
+	if (Parametros Validos?) then (Parametros validos)
+
+
+
+		:UPDATE 'usuario';
+		 note left: Borrado logico activo=0
+		if (Query exitoso?) then (si)
+						:crearRespuesta(200, "Usuario actualizado", usuario);
+				else (no)
+					:crearRespuesta(400, "Error en la consulta", usuario);
+				
+					endif
+	else (Parametros invalidos)
+		:crearRespuesta(400, "Error en los parametros", []);
+	endif
+	
+else (no)
+
+:crearRespuesta(404, "Error en la consulta", []);
+
+endif
+:response(ArregloResponse);
+stop
+@enduml

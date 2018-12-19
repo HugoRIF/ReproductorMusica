@@ -1,0 +1,66 @@
+@startuml
+title __GET usuarios__
+start
+
+	
+if(nombre esta definido \n y contrasenia esta definido) then (si)
+:Recibe:nombre,contrasenia;
+floating note left
+ Parametros:
+	nombre_usuario: no es vacio
+	contrasenia: no es vacio
+end note
+	if (Parametros Validos?) then (Parametros validos)
+
+
+
+		:SELECT 'usuario';
+		 note left: Obtener: id, nombre, tipo_usuario\n usuario = resultQuery
+		if (Query exitoso?) then (si)
+			if (Tipo del usuario?) then (USUARIO)
+				:Hacer query;
+				note right
+					JOIN a 'playlist', 'cancion', 'artista','album','playlist_con_cancion'
+					Obtener:
+					playlist.id
+					playlists.nombre
+					cancion.nombre
+					cancion.direccion
+					artista.nombre
+					album.nombre 
+					playlists = resultQuery
+				end note
+				if (Query exitoso? ) then (si)
+					if (Tiene playlists?) then (si)
+						:crearRespuesta(200, "Usuario y tiene playlist", [usuario, playlists]);
+					else (no)
+						:crearRespuesta(204, "Usuario y no tiene playlist", usuario);
+					endif
+				else (no)
+					:crearRespuesta(404, "Error en la consulta", usuario);
+				endif
+			else (ADMINISTRADOR)
+				:crearRespuesta(200, "Administrador", usuario);
+			endif
+		else (no)
+			:crearRespuesta(404, "Error en la consulta", []);
+		endif
+	else (Parametros invalidos)
+		:crearRespuesta(400, "Error en los parametros", []);
+	endif
+	
+else (no)
+:Hace Query;
+note right
+SELECT * a la tabla Usuarios
+
+end note
+if (query Exitoso?) then (si)
+:crearRespuesta(200, "Usuarios Encontrados", resultQuery[...]);
+else (no)
+:crearRespuesta(404, "Error en la consulta", []);
+endif
+endif
+:response(ArregloResponse);
+stop
+@enduml
