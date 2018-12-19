@@ -1,0 +1,293 @@
+@startuml
+title __ABC Usuario__
+actor Usuario
+
+participant "Aplicacion Web" as AW
+participant API
+database BD
+activate Usuario #DarkSalmon 
+
+
+note over Usuario
+PREECONDICIONES
+Estar en la vista "adminUsuarios"
+end note
+
+group evt AGREGAR USUARIO
+
+Usuario -> AW: Presiona el boton "Agregar +"
+
+activate AW
+AW -> Usuario: Muestra vista "AgregarUsuario"
+Usuario -> AW: llenar formulario: nombre,contrasenia, tipo_usuario y presionar Registrar
+AW->AW: ValidarFormulario(nombre,contrasenia, tipo_usuario )
+note right 
+Se valida que todos los campos esten llenos
+end note
+activate AW #DarkSalmon
+group Formulario Valido
+AW -> API: POST ...index.php/usuario
+note left
+Se crea un Arreglo Usuario con los datos:
+* Nombre
+*contrasenia
+*tipo_usuario
+
+end note
+activate API
+
+        API->API: validarPOST(nombre,contrasenia,tipo_usuario )
+note right 
+Validar todos los campos  recibidos esten llenos
+end note
+group Parametros Validos
+
+	API -> BD: SELECT 'usuario'
+	activate BD
+	note right
+		Se hace SELECT a la tabla de 'usuario'
+                para ver si existe un usuario con el mismo nombre
+       
+	end note
+	BD -> API: resultQuery
+
+	deactivate BD
+API -> API: verificarExitoQuery(resultQuery)
+group Exito Query SELECT
+group existe usuario
+group #LightBlue metodo crearRespuesta
+		API -> API: ArregloResponse = [\ncodigo = 200\nmensaje = Intenta con otro nombre \ndata = [resultData]]
+	end
+
+	
+else NO existe Usuario
+API -> BD: INSERT 'usuario'
+	activate BD
+	note right
+		Se hace el query a la tabla de 'usuario'
+                para crear un nuevo usuario con los datos proporcionados
+===
+                Se espera obtener la respuesta del query:
+                TRUE. Si se agrego 
+                FALSE. Si no se pudo Agregar
+               
+	end note
+	BD -> API: resultQuery
+
+	deactivate BD
+	API -> API: verificarExitoQuery(resultQuery)
+        activate API #pink
+group Exito Query INSERT
+		
+
+	group #LightBlue metodo crearRespuesta	
+API -> API: ArregloResponse =[\ncodigo = 201\nmensaje = Usuario creado\n data =[ ] 
+end
+else Falla Query INSERT
+group #LightBlue metodo crearRespuesta
+API -> API: ArregloResponse =[\ncodigo = 202\nmensaje = No se puede crear usuario\n data =[ ]
+
+end
+end
+end
+else Falla Query SELECT
+group #LightBlue metodo crearRespuesta
+		API -> API: ArregloResponse = [\ncodigo = 404\nmensaje = Error en la consulta\ndata = []]
+	end
+end
+
+else Parametros Invalidos
+group #LightBlue metodo crearRespuesta
+	API -> API: ArregloResponse = [\ncodigo = 400\nmensaje = Error en los parametros\ndata = []]
+end
+
+
+
+end
+deactivate API
+API -> AW:response(ArregloResponse)
+
+activate AW #pink
+
+AW -> AW: RevisarCodigo(response)
+
+	AW -> Usuario: Muestra Alert(response[mensaje]) y muestra vista principal
+
+deactivate AW
+
+deactivate AW
+else Formulario Invalido
+AW -> Usuario: Muestra Alert("llena todo el formulario por favor") y muestra vista IngresarUsuario
+
+end
+deactivate AW
+end
+
+
+
+
+
+
+
+
+
+
+group evt ELIMINAR USUARIO
+
+Usuario -> AW: Presiona el icono "Eliminar" de un usuario, mandar Usuario[id,nombre,tipo_usuario]
+
+activate Usuario #DarkSalmon 
+activate AW
+
+AW -> Usuario: Muestra vista "Eliminar Usuario"
+Usuario -> AW: Presionar boton "Si,Eliminar"
+
+AW -> API: DELETE.../usuarios/?id="Usuario[id]"
+activate API
+   API->API: validarDELETE(id)
+group Parametros Validos
+     
+note right 
+Este metodo valida que el id no este vacio
+end note
+	API -> BD: UPDATE 'usuario'
+	activate BD
+	note right
+		Se hace el query a la tabla de 'usuario'
+                Se hace un borrado logico
+                 usuario.activo = 0;
+
+	end note
+	BD -> API: resultQuery
+
+	deactivate BD
+	API -> API: verificarExitoQuery(resultQuery)
+        activate API #pink
+	group Exito Query UPDATE
+		
+
+group #LightBlue metodo crearRespuesta	
+API -> API: ArregloResponse =[\ncodigo = 200\nmensaje = Usuario eliminado\n data =[ ] 
+end
+else Falla Query UPDATE
+group #LightBlue metodo crearRespuesta	
+API -> API: ArregloResponse =[\ncodigo = 400\nmensaje = No se puede eliminar usuario\n data =[ ]
+end
+
+		
+	
+end
+else Parametros Vacios
+group #LightBlue metodo crearRespuesta	
+	API -> API: ArregloResponse = [\ncodigo = 400\nmensaje = Error en los parametros\ndata = []]
+end
+end
+deactivate API
+API -> AW:response(ArregloResponse)
+
+activate AW #pink
+
+
+	AW -> Usuario: Muestra Alert(response[mensaje]) y muestra vista principal
+
+
+
+deactivate AW
+deactivate AW
+end
+
+
+
+
+
+
+
+
+
+
+group evt MODIFICAR USUARIO
+Usuario -> AW: Presiona el icono "Editar" de un usuario, Mandar Usuario[id,nombre,tipo_usuario]
+
+activate Usuario #DarkSalmon 
+activate AW
+AW -> Usuario: Muestra vista "Editar Usuario"
+Usuario -> AW: llenar formulario: nombre, contrasenia y tipo_usuario
+AW->AW: ValidarFormulario(nombre, contrasenia, tipo_usuario)
+note right 
+Este metodo valida los parametros si
+alguno esta vacio no se manda.
+pero todos los campos stan vacios no se modifica nada
+end note
+activate AW #DarkSalmon
+group Formulario Valido
+AW -> API: PUT .../index.php/usuarios/ 
+activate API
+note left
+Se crea un Arreglo modificarUsuario con los datos:
+*id
+* Nombre
+*contrasenia
+* tipo_usuario
+
+
+end note
+  API->API: validarPUT(id,nombre, contrasenia, tipo_usuario)
+group Parametros Validos
+      
+note right 
+Este metodo valida los parametros si
+alguno esta vacio no se editara,
+si todos estan vacios no se editara nada
+end note
+	API -> BD: UPDATE 'usuario'
+	activate BD
+	note right
+		Se hace el query a la tabla de 'Usuario'
+                Solo se edita. el usuario con  el parametro del que se tiene el dato
+
+
+	end note
+	BD -> API: resultQuery
+
+	deactivate BD
+	API -> API: verificarExitoQuery(resultQuery)
+        activate API #pink
+	group Exito Query UPDATE
+		
+group #LightBlue metodo crearRespuesta	
+API -> API: ArregloResponse =[\ncodigo = 200\nmensaje = Usuario actualizado\n data =[ ] 
+end
+else Falla Query UPDATE
+group #LightBlue metodo crearRespuesta	
+API -> API: ArregloResponse =[\ncodigo = 400\nmensaje = No se puede actualizar usuario\n data =[ ]
+end
+end
+
+	
+
+else Parametros Vacios
+group #LightBlue metodo crearRespuesta	
+	API -> API: ArregloResponse = [\ncodigo = 200\nmensaje = No Se modifico nada\ndata = []]
+end
+end
+deactivate API
+API -> AW:response(ArregloResponse)
+
+activate AW #pink
+
+
+
+	AW -> Usuario: Muestra Alert(response[mensaje]) y muestra vista principal
+
+deactivate AW
+
+deactivate AW
+else Formulario Vacio
+AW -> Usuario: Muestra Alert("No se modifico nada") y muestra vista principal
+
+end
+deactivate AW
+
+end
+deactivate Usuario
+@enduml

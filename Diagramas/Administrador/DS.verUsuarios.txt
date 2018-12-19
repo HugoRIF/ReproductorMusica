@@ -1,0 +1,88 @@
+@startuml
+title __Ver Usuarios__
+actor Usuario
+participant "Aplicacion Web" as AW
+participant API
+database BD
+
+Usuario -> AW: Presiona el boton "Usuarios"
+note left #FFAAAA
+	  PRECONDICIONES:
+	  * Inicio de sesion como administrador
+          * Estar en la pagina "principal" de administrador
+
+end note
+activate Usuario
+activate AW
+
+AW -> API: GET.../index.php/usuarios
+activate API
+
+
+
+	API -> BD: Hacer Query
+	activate BD
+	note right
+		Se hace el query a la tabla de 'usuario'
+                para obtener la informacion de todos los usuarios
+               
+obtener:
+*usuario.id
+*usuario.nombre
+*usuario.tipo_usuario
+====
+		Se espera obtener el resultado del query de la siguiente forma:
+		  resultQuery = [
+		                    usuario1=[
+		                    			  id = #
+                                           nombre = "usuario.nombre"
+                                           tipo_usuario="usuario.tipo_usuario"
+
+		                                              ]
+                                    usuario2=[
+		                    			  id = #
+                                            nombreUsuario = "usuario.nombre"
+                                            TipoUsuario="usuario.tipo.usuario"
+
+		                                              ]
+                                      .
+                                      .
+                                      .
+
+		                    ]
+	end note
+	BD -> API: resultQuery
+
+	deactivate BD
+	API -> API: verificarExitoQuery(resultQuery)
+	group Query exitoso
+		
+		group #LightBlue metodo crearRespuesta
+			API -> API: ArregloResponse =[\ncodigo = 200\nmensaje = Usuarios encontrados\ndata = resultQuery
+end
+		
+	else Query Falla
+group #LightBlue metodo crearRespuesta
+		API -> API: ArregloResponse = [\ncodigo = 400\nmensaje = Error en la consulta\ndata = []]
+end	
+end
+
+API -> AW:response(ArregloResponse)
+deactivate API
+activate AW #pink
+
+AW -> AW: RevisarCodigo(response)
+note right
+		Revisa el codigo para generar la tabla con los usuarios recibidos 
+
+	end note
+group Codigo 200 
+	AW -> Usuario: Muestra vista "AdminUsuarios" con sus playlist(s)
+
+else Otro codigo
+	AW -> Usuario: Muestra alert(response[mensaje]) y vista "Principal"
+	deactivate AW
+end
+deactivate AW
+deactivate Usuario
+@enduml

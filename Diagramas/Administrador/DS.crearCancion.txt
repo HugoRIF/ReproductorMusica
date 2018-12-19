@@ -1,0 +1,249 @@
+@startuml
+title __Eventos adminCancion__
+actor Usuario
+participant "Aplicacion Web" as AW
+participant API
+database BD
+note over Usuario #FFAAAA
+	  PRECONDICIONES
+          * Estar en la pagina "AdminCanciones" 
+         ver diagrama DS.verCanciones
+
+end note
+==AGREGAR CANCION==
+group evt AGREGAR CANCION
+Usuario -> AW: Presiona el boton "Agregar +"
+
+activate Usuario #DarkSalmon 
+activate AW
+AW -> Usuario: Muestra vista "AgregarCancion"
+Usuario -> AW: llenar formulario: nombre, artista, album,genero y presionar Registrar
+AW->AW: ValidarFormulario(nombre, artista, album,genero)
+note right 
+Se valida que todos los campos esten llenos
+,que el archivo sea mp3 y se genera una direccion
+end note
+activate AW #DarkSalmon
+group Formulario Valido
+AW -> API: POST.../index.php/canciones
+note left
+Se crea un Arreglo Cancion con los datos:
+* Nombre
+*Artista
+*Genero
+*Direccion
+
+
+end note
+activate API
+
+        API->API: validarPOST(CN)
+note right 
+Validar que los datos recibidos esten llenos 
+end note
+group Parametros Validos
+
+	API -> BD: Hacer Query1(SELECT)
+activate BD
+note right
+Primero se checa que exista el Artista
+Se hace un SELECT a la tabla artista:
+Si existe se obtiene : artista.id,
+Si no existe solo se obtiene un TRUE en la consulta
+end note
+	
+	BD -> API: resultQuery1
+deactivate BD
+API->API: verificarExitoQuery(resultQuery1)
+group exito Query SELECT artista
+group  Existe Artista 
+	API->BD: Hacer Query2 (SELECT)
+activate BD
+note right
+Se hace un SELECT a la tabla Album con el nombre
+Si existe se obtiene : album.id,
+Si no existe solo se obtiene un TRUE en la consulta
+end note
+	BD->API: result Query2
+Deactivate BD
+API->API: verificarExitoQuery(resultQuery2)
+group Exito Query SELECT album
+group Existe Album 
+activate BD
+API->BD: Hacer Query3(SELECT)
+note right
+Se hace un SELECT a la tabla cancion con el nombre
+Si existe se obtiene : cancion.id,
+Si no existe solo se obtiene un TRUE en la consulta
+end note
+BD->API: Result Query3
+deactivate BD
+API->API:verificarExitoQuery(resultQuery3)
+group Exito query  SELECT cancion
+group  Existe Cancion
+group #LightBlue metodo crearRespuesta
+	API -> API: ArregloResponse = [\ncodigo = 200 \nmensaje = Cancion Existente\ndata = []]
+end
+
+else NO existe Cancion
+activate BD
+API->BD: Hacer Query 4(INSERT)
+note right
+Se hace un INSERT a la tabla cancion con el nombre
+end note
+BD->API: result Query4(TRUE/FALSE)
+deactivate BD
+API->API:verificarExitoQuery(resultQuery4)
+group Exito Query INSERT cancion
+
+
+group #LightBlue metodo crearRespuesta
+	API -> API: ArregloResponse = [\ncodigo = 201 \nmensaje = Cancion Agregada\ndata = []]
+end
+else No se registro (FALSE)
+group #LightBlue metodo crearRespuesta
+	API -> API: ArregloResponse = [\ncodigo = 202 \nmensaje = No se pudo agregar  la Cancion\ndata = []]
+end
+end
+
+end
+else Falla Query SELECT cancion
+group #LightBlue metodo crearRespuesta
+	API -> API: ArregloResponse = [\ncodigo = 404\nmensaje = NO se puede acceder a la informacion\ndata = []]
+end
+end
+else NO Existe Album
+API->BD: Hacer Query 3.1(INSERT)
+note right
+Se hace un INSERT a la tabla album con el nombre
+end note
+BD->API: result Query3.1(TRUE/FALSE)
+API->API: verificarExitoQuery(resultQuery3.1)
+group Exito Query INSERT album
+API->BD: Hacer Query 4.1(INSERT)
+note right
+Se hace un INSERT a la tabla cancion con el nombre
+end note
+BD->API: result Query3.1(TRUE/FALSE)
+API->API: verificarExitoQuery(resultQuery4.1)
+group Exito Query INSERT cancion
+group #LightBlue metodo crearRespuesta
+	API -> API: ArregloResponse = [\ncodigo = 201 \nmensaje = Cancion y Album creados\ndata = []]
+end
+else Falla Query INSERT cancion
+group #LightBlue metodo crearRespuesta
+	API -> API: ArregloResponse = [\ncodigo = 404 \nmensaje = No se puede agregar Cancion\ndata = []]
+end
+end
+else Falla Query INSERT album
+group #LightBlue metodo crearRespuesta
+	API -> API: ArregloResponse = [\ncodigo = 404 \nmensaje = No se puede agregar Album ni Cancion\ndata = []]
+end
+end
+
+
+end
+else Falla Query SELECT album
+group #LightBlue metodo crearRespuesta
+	API -> API: ArregloResponse = [\ncodigo = 404 \nmensaje = No se puede agregar Cancion\ndata = []]
+end
+end
+
+else No existe Artista
+API->BD: Hacer Query2.1 (INSERT)
+activate BD
+note right
+Se hace un INSERT a la tabla artista con el nombre dado
+
+end note
+	BD->API: result Query2.1(TRUE/FALSE)
+Deactivate BD
+API->API: verificarExitoQuery(resultQuer2.1)
+group Exito Query INSERT artista
+API->BD: Hacer Query3.2 (INSERT)
+activate BD
+note right
+Se hace un INSERT a la tabla album con el nombre dado
+
+end note
+	BD->API: result Query3.2(TRUE/FALSE)
+Deactivate BD
+API->API: verificarExitoQuery(resultQuer3.2)
+group Exito Query INSERT album
+API->BD: Hacer Query4.2 (INSERT)
+activate BD
+note right
+Se hace un INSERT a la tabla cancion con el nombre dado
+
+end note
+	BD->API: result Query4.2(TRUE/FALSE)
+Deactivate BD
+API->API: verificarExitoQuery(resultQuer4.2)
+group Exito Query INSERT cancion
+
+group #LightBlue metodo crearRespuesta
+	API -> API: ArregloResponse = [\ncodigo = 201 \nmensaje = Cancion Agregada \ndata = []]
+end
+
+
+else falla query INSERT cancion
+group #LightBlue metodo crearRespuesta
+	API -> API: ArregloResponse = [\ncodigo = 404 \nmensaje = NO se puede Agregar  \ndata = []]
+end
+end
+else Falla Query INSERT album
+group #LightBlue metodo crearRespuesta
+	API -> API: ArregloResponse = [\ncodigo = 404\nmensaje = NO se puede crear \ndata = []]
+end
+end
+else Falla Query INSERT artista
+group #LightBlue metodo crearRespuesta
+	API -> API: ArregloResponse = [\ncodigo = 404\nmensaje = NO se puede crear \ndata = []]
+end
+end
+end
+
+else Falla Query SELECT artista
+group #LightBlue metodo crearRespuesta
+	API -> API: ArregloResponse = [\ncodigo = 404\nmensaje = NO se puede crear Artista\ndata = []]
+end
+
+end
+	
+else Parametros Invalidos
+group #LightBlue metodo crearRespuesta
+	API -> API: ArregloResponse = [\ncodigo = 400\nmensaje = Error en los parametros\ndata = []]
+end
+end
+deactivate API
+API -> AW:response(ArregloResponse)
+
+
+
+	AW -> Usuario: Muestra Alert(response[mensaje]) y muestra vista principal
+
+
+
+deactivate AW
+else Formulario Invalido
+AW -> Usuario: Muestra Alert("llena todo el formulario por favor") y muestra vista IngresarUsuario
+
+end
+deactivate AW
+end 
+==VER CANCIONES DE ARTISTA==
+group evt Canciones Artista
+note left
+Al estar en la vista "adminCanciones" ya se cuentan con los datos de todas las canciones
+ver DS.verCanciones
+end note
+Usuario->AW :presionar el nombre de un artista de la tabla, mandar Artista[id]
+AW->AW: FiltrarCanciones(Artista)
+note right: Se obtienen todos los albunes, con las canciones del artista solicitado 
+
+AW->Usuario: Mostrar vista "artistaParticular"
+end
+
+
+deactivate Usuario
+@enduml

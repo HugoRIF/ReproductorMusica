@@ -1,0 +1,61 @@
+@startuml
+title *ver Canciones*
+floating note left: Get.../canciones/
+start
+
+
+	:Hacer Query;
+	floating note left
+		JOIN a las tablas cancione, album, artista
+		
+		Obtener:
+canciones.id
+canciones.nombre
+canciones.direcion
+album.nombre
+artista.nombre
+
+               
+	end note
+	if (Query exitoso?) then (Si)
+		:verUsuarios(resultQuery)
+			:crearRespuesta(200, "Canciones Encontradas", resultQuery);
+			floating note left: Se crea la respuesta (ArrayResponse) con el\n codigo, mensaje e info del query
+		
+	else (No)
+		:crearRespuesta(400, "Error en la consulta", []);
+	endif
+
+:manda response(ArrayResponse);
+stop
+@enduml@startuml
+title *ver Canciones*
+floating note left: Get.../canciones/
+start
+
+
+	:Hacer Query;
+	floating note left
+		JOIN a las tablas cancione, album, artista
+		
+		Obtener:
+canciones.id
+canciones.nombre
+canciones.direcion
+album.nombre
+artista.nombre
+
+               
+	end note
+	if (Query exitoso?) then (Si)
+		:verUsuarios(resultQuery)
+			:crearRespuesta(200, "Canciones Encontradas", resultQuery);
+			floating note left: Se crea la respuesta (ArrayResponse) con el\n codigo, mensaje e info del query
+		
+	else (No)
+		:crearRespuesta(400, "Error en la consulta", []);
+	endif
+
+:manda response(ArrayResponse);
+stop
+@enduml
