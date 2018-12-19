@@ -1,0 +1,184 @@
+@startuml
+title __Login__
+actor Usuario
+participant "Aplicacion Web" as AW
+participant "API" as API
+database BD
+
+
+activate Usuario #DarkSalmon
+activate AW
+
+
+Usuario -> AW : Abre Aplicacion Web
+AW -> Usuario : Muestra vista "Login"
+Usuario -> AW : Ingresa: nombre del usuario, Contraseña y da click en ingresar
+AW -> AW : validarDatosLogin(nombre_usuario,contrasenia)
+
+ note right
+  nombre_usuario: validar que no este vacio
+  contrasenia: validar que no este vacio
+ end note
+activate AW #DarkSalmon
+group Datos de login no estan vacios
+
+ AW->API : GET .../usuarios/?nombre="nombre_usuario"/?contrasenia="contrasenia"
+ activate API
+
+ API->API: ValidarParametros(nombre_usuario,contrasenia)
+note right
+  nombre_usuario: validar que no este vacio
+  contrasenia: validar que no este vacio
+ end note
+group parametros Validos
+activate API #DarkSalmon
+   API->BD: SELECT'usuario'
+ 
+   note right
+  Se hace un SELECT a usuario
+  atributos:
+   *nombre
+   *contrasenia 
+   ====
+   Respuesta Deseada (resultQuery):
+    *id
+    *nombre
+    *tipo_usuario (Tipo de Usuario !/2)
+ end note
+   activate BD
+   BD->API:  resultQuery = [id, nombre,tipo_usuario]
+note left: usuario = resulQuery
+   deactivate BD
+ API->API: verificarExitoQuery(usuario)
+   group Query Exitoso
+
+    API -> API: checarTipo(usuario[tipo_usuario])
+    group Es usuario
+       activate API
+       
+      API -> BD: Hacer Query
+      activate BD
+      BD->API: resultQueryPlaylist 
+      note left: playlists = resultQueryPlaylist
+      deactivate BD
+
+      note right
+          JOIN a las tablas 'playlist', 'cancion', 'playlist_con_cancion','artista','album'
+          Obtener:
+      *playlist.id
+      *playlist.nombre
+      *cancion.nombre
+      *cancion.direccion
+      *artista.nombre
+      *album.nombre
+           
+      ===
+          Se espera obtener el resultado del query de la siguiente forma:
+            resultQueryPlaylist = [
+                              playlist1=[
+                                      id = "playlist.id"
+                                            nombre = "playlist.nombre",
+                                            canciones = [
+                                                             [ nombre="cancion.nombre",
+                                                              artista = "artista.nombre",
+                                                              album = "album.nombre",
+                                                              direccion = "cancion.direccion"],
+                                                              [ ... ] , [ ... ], 
+                                                        ]
+
+                                        ],
+                                playlist2=[
+                                      idPlaylist = "playlist.id"
+                                            nombrePlaylist = "playlist.nombre",
+                                            canciones = [
+                                                             [ nombre="cancion.nombre",
+                                                              artista = "artista.nombre",
+                                                              album = "album.nombre",
+                                                              direccion = "cancion.direccion"],
+                                                              [ ... ] , [ ... ], 
+                                                        ]
+
+                                        ]
+                              ]
+        end note
+      deactivate BD
+      API->API: verificarExitoQuery(playlists)
+      activate API #DarkSalmon
+      group Query Playlist Exitoso
+      API->API : contarPlaylist(playlists)
+      activate API #pink
+      group Tiene al menos una Playlist
+      group #LightBlue metodo crearRespuesta
+           
+      API->API: ArregloResponse=[ \n code=200, \n mensaje=Tiene PlayList, \n data=[usuario, playlists] ] \n  ]
+      end
+      else No tiene playlist
+      group #LightBlue metodo crearRespuesta
+           
+      API->API: ArregloResponse=[ \n code=204, \n mensaje=NO Tiene PlayList,\n data= usuario]
+      end
+      end
+      else Query Playlist Falla
+      group #LightBlue metodo crearRespuesta
+           
+      API->API: ArregloResponse=[ \n code=404, \n mensaje=error en consulta,\n data= usuario]
+      deactivate API
+      end
+      end
+      deactivate API
+
+    else Es administrador
+
+     group #LightBlue metodo crearRespuesta
+     API->API: ArregloResponse=[ code=200, \n mensaje="Usuario Existe",  \n data = usuario ]
+end
+end
+   else Query Falla
+      group #LightBlue metodo crearRespuesta
+      API->API:  ArregloResponse=[code=404, \n mensaje="Error en la consulta",  \n data = [] ])
+end
+   end
+deactivate API
+else Parametros invalidos
+  group #LightBlue metodo crearRespuesta
+  API->API:  ArregloResponse=[code=400, \n mensaje="Error en los parametros",  \n data = [] ])
+end
+
+ end
+
+ API->AW: response(ArregloResponse)
+deactivate API
+ AW->AW: validarCodigo(response)
+deactivate AW
+  group Es codigo 200, el Usuario existe
+ 
+ AW->AW: checarTipo(Response[data][usuario[tipo_usuario])
+ 
+ group Es Administrador
+ AW->Usuario: Muestra vista "inicio" de Administrador
+ else Es Usuario 
+
+  AW -> AW: crearUsuario(response)
+  note right
+    Se crea:
+    usuario = [ id,
+         nombre,
+        playlists = [
+            playlist1= [ id, nombre, canciones = [nombre, artista, album, direccion], [...]],
+            playlist2= [ ...] ]
+        ]
+    Para mostrar la vista "Inicio Usuario"
+  end note
+
+  AW->Usuario: Muestra vista "Inicio Usuario"
+end
+else No es 200, usuario invalido
+  AW->Usuario: Muestra alert(Response[Mensaje]), muestra vista "login"
+end
+
+else Datos de login Vacios
+  AW->Usuario: Muestra alert("Ingresa el usuario/contraseña"), muestra vista "login"
+deactivate Usuario
+deactivate AW
+end
+@enduml

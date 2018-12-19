@@ -1,0 +1,153 @@
+	@startuml
+	title **__Agregar cancion(es) a playlist__**
+	actor Usuario
+	participant "Aplicacion Web" as AW
+	participant API
+	database BD
+
+	Usuario -> AW: Presiona el boton "Playlist", se manda usuario 
+
+	note left #FFAAAA
+		PRECONDICIONES:
+		El usuario se encuentra en la vista "Inicio Usuario"
+		ver DS.login.
+	end note
+	note right
+		usuario = [ id,
+				 nombre,
+				playlists = [
+						playlist1= [ id, nombre, canciones = [nombre, artista, album, direccion], [...]],
+						playlist2= [ ...] ]
+				]
+				
+	end note
+
+	activate Usuario #DarkSalmon
+	activate AW
+	AW -> AW: info_playlist = recibirInfoUsuario(usuario)
+	
+	AW -> Usuario: Muestra vista "Playlist"
+	note left: Del lado del cliente se cuentan las playlists
+
+	group Tiene al menos una playlist
+		
+		group evt presionar boton "+"
+			Usuario -> AW : Presiona boton "+" de alguna playlist
+
+			AW -> API : GET ... index.php/canciones/
+			activate API #DarkSalmon
+
+
+				API -> BD: Hacer query
+				activate BD
+
+				note right
+					SELECT a las tablas 'cancion', 'artista', 'album'
+					Obtener:
+					cancion.id
+					cancion.nombre
+					artista.nombre
+					album.nombre
+					Para cada cancion.
+					====
+					Se espera obtener el resultado del query de la siguiente forma:
+					  resultQuery = [ 
+					  					[id = "cancion.id", 
+					  					 nombre = "cancion.nombre",
+					  					 artista = "artista.nombre",
+					  					 album = "album.nombre", ... ],
+
+					  					[id = "cancion.id", 
+					  					 nombre = "cancion.nombre",
+					  					 artista = "artista.nombre", 
+					  					 album = "album.nombre", ... ],
+
+					  					[...],[...]]
+				end note
+
+				BD -> API: resultQuery
+				note left: canciones = resultQuery
+				deactivate BD
+
+				API -> API: verificarExitoQuery(datos_canciones)
+
+				group Query Exitoso
+					group #LightBlue metodo crearRespuesta
+						API -> API: ArregloResponse =[\ncodigo = 200,\nmensaje = "Consulta exitosa",\ndata = canciones]
+					end
+				else Query Fallo
+					group #LightBlue metodo crearRespuesta
+						API -> API: ArregloResponse =[\ncodigo = 404,\nmensaje = "Error en la consulta",\ndata = []]
+					end
+				end
+
+			API -> AW: response(ArregloResponse)
+			deactivate API
+			activate AW
+
+			AW -> AW: validarCodigo(response[codigo])
+
+			group Codigo 200
+				AW -> Usuario: Muestra vista "Canciones Disponibles"
+
+				Usuario -> AW: Selecciona cancion(es) y presiona el boton "agregar"
+				activate Usuario
+				activate AW
+
+				AW -> API: POST .../index.php/playlists
+				note left:Se mandan los datos: id_playlist, id_cancion (puede ser uno a mas id's de canciones)
+				activate API #DarkSalmon
+
+				API -> API: validarParametrosPOST(id_playlist, id_cancion)
+				note left: id_playlist : que no sea vacio\nid_cancion: que no sea vacio
+
+				group Parametros Validos
+					API -> BD: INSERT 'playlist_con_canciones'
+					activate BD
+					BD -> API: resultQuery
+					deactivate BD
+					note right: Se insertan id_playlist y id_cancion\n a la tabla 'playlist_con_canciones'\nSe espera que resultQuery tenga TRUE o FALSE
+
+					API -> API : verificarExitoQuery(resultQuery)
+					note right
+						TRUE sí se realizo el insert,
+						FALSE si no se realizo el insert
+					end note
+					group Query Exitoso
+						group #LightBlue metodo crearRespuesta
+							API -> API: ArregloResponse =[\ncodigo = 201\nmensaje = "Cancion(es) agregadas con exito"\ndata = [id_playlist, id_cancion]
+						end
+
+					else Query Falla
+						group #LightBlue metodo crearRespuesta
+							API -> API: ArregloResponse =[\ncodigo = 202\nmensaje = "Error al agregar la(s) cancion(es)"\ndata = []]
+						end
+					end 
+
+				else Parametros Invalidos
+					group #LightBlue metodo crearRespuesta
+						API -> API: ArregloResponse =[\ncodigo = 400\nmensaje = "Error en los parametros"\ndata = []]
+					end
+				end
+
+				API -> AW: response(ArregloResponse)
+
+				AW -> AW: validarCodigo(response[codigo])
+
+				group Codigo 201
+					AW -> AW: actualizarInfo(usuario, response[id_playlist], response[id_cancion])
+					note left: Este metodo actualiza la informacion\ndel usuario con las canciones\nagregadas.
+				end
+				deactivate API
+				deactivate AW
+			end
+
+				AW -> Usuario: Muestra alert(response[mensaje]) y vista "Inicio Usuario"
+				deactivate AW
+				deactivate Usuario
+
+		end
+	deactivate AW
+	deactivate Usuario
+	end
+	@enduml

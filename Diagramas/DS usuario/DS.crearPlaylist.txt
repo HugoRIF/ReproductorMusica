@@ -1,0 +1,117 @@
+@startuml
+title **__Crear Playlist__**
+actor Usuario
+participant "Aplicacion Web" as AW
+participant API
+database BD
+
+Usuario -> AW: Presiona el boton "Playlist", se manda usuario
+
+note left #FFAAAA
+	PRECONDICIONES:
+	El usuario se encuentra en la vista "Inicio Usuario"
+	ver DS.login 
+end note
+note right
+		usuario = [ id,
+				 nombre,
+				playlists = [
+						playlist1= [ id, nombre, canciones = [nombre, artista, album, direccion], [...]],
+						playlist2= [ ...] ]
+				]
+				
+	end note
+
+activate Usuario #DarkSalmon
+activate AW
+AW -> AW: info_playlist = recibirInfoUsuario(usuario)
+
+AW -> Usuario: Muestra vista "Playlist"
+note left: Del lado del cliente se cuentan las playlists
+
+
+group Tiene menos de dos playlist
+
+	group evt presionar boton "agregar"
+		Usuario -> AW : Presiona boton "agregar"
+
+		AW -> Usuario : Muestra vista "crearPlaylist"
+		deactivate AW
+		Usuario -> AW : Ingresa nombre de la playlist y presiona boton "crear"
+
+		activate AW
+		AW -> AW : validarNombrePlaylist(nombre_playlist)
+		note right: nombre_playlist: validar que no este vacia
+		activate AW #DarkSalmon
+
+		group Nombre valido 
+			activate Usuario
+			AW -> API : POST .../index.php/playlists
+			note left: Se mandan los datos: id_usuario, nombre_playlist
+			activate API
+			API -> API : validarParametrosPOST(id_usuario, nombre_playlist)
+			note right
+				id_usuario: validar que no este vacio
+				nombre_playlist: validar que no este vacio
+			end note
+			activate API #FFBBBB
+
+			group Parametros Validos
+
+				API -> BD: SELECT COUNT 'playlist'
+				note right: Se obtiene el numero de playlist\ndel usuario 
+				activate BD
+				BD -> API: resultQuery
+				deactivate BD
+				API -> API: contarPlaylist(resultQuery)
+
+				group Tiene menos de dos playlists 
+
+					API -> BD : INSERT 'playlist'
+					activate BD
+					note right: se crea la playlist con el nombre_playlist y regresa su id
+					BD -> API : resultQuery
+					deactivate BD
+					API -> API : verificarExitoQuery(resultQuery)
+			
+					group Query Exitoso
+
+						note left: playlist_creada = [resultQuery, nombre_playlist]
+
+						group #LightBlue metodo crearRespuesta
+							API -> API: ArregloResponse =[\ncodigo = 201\nmensaje = Playlist creada\ndata = playlist_creada
+						end 
+						
+					else Query Falla
+						group #LightBlue metodo crearRespuesta
+							API -> API: ArregloResponse =[\ncodigo = 202\nmensaje = Error al crear la playlist\ndata = []]
+						end
+					end
+				else Tiene dos playlist
+					group #LightBlue metodo crearRespuesta
+							API -> API: ArregloResponse =[\ncodigo = 200\nmensaje = No puedes crear mas playlists\ndata = []]
+						end
+				end 
+			else Parametros Invalidos
+				activate API #FFBBBB
+				group #LightBlue metodo crearRespuesta
+					API -> API: ArregloResponse =[\ncodigo = 400\nmensaje = Error en los parametros\ndata = []]
+				end
+				deactivate API
+			end
+			API -> AW : response(ArregloResponse)
+			deactivate API
+
+			AW -> Usuario : Muestra alert(response[mensaje]), muestra vista "Inicio Usuario"
+			
+			
+			deactivate AW
+			deactivate Usuario
+		else Nombre invalido 
+			AW -> Usuario: Muestra alert("Prueba con otro nombre")
+			deactivate AW
+		end
+		deactivate Usuario
+	end
+end
+@enduml
