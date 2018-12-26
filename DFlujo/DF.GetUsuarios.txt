@@ -1,84 +1,99 @@
 @startuml
-title _GET usuarios_
+title GET usuarios
 start
 
-	
-if(nombre_usuario esta definido \n y contrasenia esta definido) then (si)
-:validarParametros(nombre_usuario,contrasenia);
+:parametros_definidos_get($nombre, $contrasenia);
+if(nombre: definido \n y contrasenia: definido) then (si)
+:validar_parametros_get(nombre,contrasenia);
 note left
-	nombre_usuario: no es vacio
+	nombre: no es vacio
 	contrasenia: no es vacio
 end note
 	if (Parametros Validos?) then (si)
 
-		:SELECT id, tipo_usuario FROM usuario WHERE nombre="nombre_usuario" AND contrasenia="contrasenia";
-		 note left:Del query se obtiene: id, tipo_usuario\n se crea usuario = [ id, nombre_usuario, tipo_usuario]
+		:query_usuario=SELECT id,nombre, id_tipo_usuario FROM usuario WHERE nombre="nombre" AND contrasenia="contrasenia";
+		 note left:Del query se obtiene: id, nombre, id_tipo_usuario\n se crea usuario = [id, nombre, id_tipo_usuario]\nse valida el query en el mismo metodo en el que se hace (modelo) \n si tiene exito manda el arreglo usuario si no manda NULL
+		:validar_select(query_usuario);
+
 		if (Query exitoso?) then (si)
-			:verTipoUsuario(usuario);
+			:ver_tipo_usuario(usuario);
 			if (Usuario?) then (si)
-				:SELECT p.id AS "Id Playlist", p.nombre AS "Nombre Playlist", c.id AS "Id\n Cancion", c.nombre AS "Nombre Cancion", a.nombre AS "Artista Cancion", al.nombre AS "Album Cancion"\n, c.direccion AS "Direccion Cancion" \nFROM playlist p JOIN playlist_con_canciones pc ON p.id = pc.id_playlist \nJOIN cancion c ON c.id = pc.id_cancion JOIN artista a ON c.id_artista = a.id JOIN album al ON c.id_album = al.id WHERE p.id_usuario = usuario[id];
+:id_playlists=SELECT id FROM playlist WHERE id_usuario=usuario[id];
+note right: se obtienen los id playlists y se valida el query;
+			:validar_select(id_playlists);
+			if(Query exitoso?) then (si)
+				if(el tamaño de id_playlists es >0?) then (si)
+				:playlists=SELECT playlist.id as "id_playlist", playlist.nombre as "nombre_playlist", cancion.id AS "id_cancion",\n cancion.nombre AS "nombre_cancion", artista.nombre AS "artista_cancion", album.nombre AS "album_cancion", cancion.direccion AS "direccion_cancion"\n FROM playlist JOIN playlist_con_canciones ON playlist.id = playlist_con_canciones.id_playlist JOIN cancion ON cancion.id = playlist_con_canciones.id_cancion\n JOIN artista ON cancion.id_artista = artista.id JOIN album ON cancion.id_album = album.id WHERE playlist.id_usuario = usuario[id];
 				note right
 					Se espera obtener la informacion de las playlist del usuario logeado de la siguiente forma:
-					[ playlist1 = [ id, nombre, canciones = [ [ nombre, artista, album], [...]]],
-					  playlist2 = [ id, nombre, canciones = [ [ nombre, artista, album], [...]]]]
-					dicha info se agrega al arreglo usuario y debe quedar:
-					usuario = [id, nombre,
-								playlists = [ playlist1 = [ id, nombre, canciones = [ [ nombre, artista, album], [...]]],
-					  					playlist2 = [ id, nombre, canciones = [ [ nombre, artista, album], [...]]]]
+					[ [ id_playlist, nombre_playlist, id_cancion, nombre_cancion, artista_cancion, album_cancion],
+					[ id_playlist, nombre_playlist, id_cancion, nombre_cancion, artista_cancion, album_cancion], [...]]
+
+					Se valida en el modelo el query
+
+					Si es valido dicha info se agrega al arreglo usuario 
+					(esto se hace en el controlador) y debe quedar:
+					usuario = [id, nombre, id_tipo_usuario, id_playlists,
+								playlists = [ [ id_playlist, nombre_playlist, id_cancion, nombre_cancion, artista_cancion, album_cancion],
+					[ id_playlist, nombre_playlist, id_cancion, nombre_cancion, artista_cancion, album_cancion], [...]]
 					  		]
 				end note
+				:validar_select(playlists);
 				if (Query exitoso? ) then (si)
-					:contarPlaylist(usuario);
-					if (Tiene playlists?) then (si)
-						:crearRespuesta(200, "Usuario y tiene playlist", usuario);
-						note right
-							Este metodo genera el arreglo 
-							Respuesta=[
-							    codigo = 200
-							    mensaje = "Usuario y tiene playlist"
-							    data = usuario
+						:crear_respuesta(200, "Usuario y tiene playlist", usuario);
+						floating note right
+							crear_respuesta() genera el arreglo respuesta=[
+							    codigo
+							    mensaje
+							    data[]
 							]
+							con los parametros que se le pasan.
 						end note
 					else (no)
-						:crearRespuesta(204, "Usuario y no tiene playlist", usuario);
+						:crear_respuesta(404, "error en la consulta", usuario);
 					endif
+
 				else (no)
-					:crearRespuesta(404, "Error en la consulta", usuario);
+					:crear_respuesta(204, "Usuario y no tiene playlist", usuario);
 				endif
 			else (no)
-				:crearRespuesta(200, "Administrador", usuario);
+				:crear_respuesta(404, "error en la consulta", usuario);
+			endif 
+			else (no)
+				:crear_respuesta(200, "Administrador", usuario);
 			endif
 		else (no)
-			:crearRespuesta(404, "Error en la consulta", []);
+			:crear_respuesta(404, "Error en la consulta", []);
 		endif
 	else (no)
-		:crearRespuesta(400, "Error en los parametros", []);
+		:crear_respuesta(400, "Error en los parametros", []);
 	endif
 	
-else (no)
-	:SELECT * FROM usuario;
+else (default)
+	:usuarios=SELECT id,nombre, id_tipo_usuario FROM usuario;
 	note right
-	Obtener: id, nombre, tipo_usuario
+	Obtiene: id, nombre, id_tipo_usuario
     se crea usuarios = [
-              usuario1= [id, nombre, tipo_usuario],
-              usuario2= [id, nombre, tipo_usuario],
+                 [id, nombre, id_tipo_usuario],
+             	 [id, nombre, id_tipo_usuario],
         		...]
+    Se valida el query
 	end note
+	:validar_select(usuarios);
 	if (Query exitoso?) then (si)
-		:crearRespuesta(200, "Usuarios encontrados", usuarios);
-		note right
-			Este metodo genera el arreglo 
-			Respuesta=[
-			    codigo = 200
-			    mensaje = "Usuarios encontrados"
-			    data = usuarios
-			]
+		:crear_respuesta(200, "Usuarios encontrados", usuarios);
+		floating note right
+			crear_respuesta() genera el arreglo respuesta=[
+			    codigo
+			    mensaje
+			    data[]
+				]
+			con los parametros que se le pasan.
 		end note
 	else (no)
-		:crearRespuesta(404, "Error en la consulta", []);
+		:crear_respuesta(404, "Error en la consulta", []);
 	endif
 endif
-:mandarRespuesta(Respuesta);
+:mandar_respuesta(respuesta);
 stop
-@endum
 @enduml
