@@ -14,63 +14,64 @@ class Usuarios_model extends CI_Model{
 
 	public function usuarios(){
     	$usuarios=$this->db->query('SELECT id,nombre,id_tipo_usuario
-                                FROM usuario' )->result();
+                                FROM usuario' );
     	
     	if($this->validar_select($usuarios)==1){
-            return $usuarios;
+            return $usuarios->result_array();
         }
         else{
             return NULL;
 	   }
-   
-    
-    return  $result;
-   
     }
-    public function validar_select($query){
-        if(isset($query)){
+    private function validar_select_usuario($query){
+    	if (count($query) == 1) {
+    		if (($query[0]['id'] && $query[0]['id_tipo_usuario']) >0 && !empty($query[0]['nombre'])) {
+    			return 1;
+    		}else{
+    			return 0;
+    		}
+    	}else{
+    		return 0;
+    	}
+    }
+    private function validar_select($query){
+        if($query->conn_id->sqlstate == "00000"){
             return 1;
         }
         else{
             return 0;
         }
     }
-    public function validar_insert($query){
+    private function validar_insert($query){
     	if ($query == TRUE) {
-    		return TRUE;
+    		return 1;
     	}else{
-    		return FALSE;
+    		return 0;
     	}
     }
 	public function login($nombre,$contrasenia){
 	    $query_usuario=$this->db->query('SELECT id,nombre,id_tipo_usuario 
                                   FROM usuario 
                                   WHERE nombre="'.$nombre.'"
-                                  AND contrasenia="'.$contrasenia.'"' )->result()[0];
-        
-        if($this->validar_select($query_usuario)==1){
-            $usuario=[
-                'id' => $query_usuario->id,
-                'nombre' => $query_usuario->nombre,
-                'id_tipo_usuario' => $query_usuario->id_tipo_usuario,
-                
-            ];
+                                  AND contrasenia="'.$contrasenia.'"')->result_array();
+	    #result_array validar para cada campo del select 
+        #mejorar las validaciones
+        if($this->validar_select_usuario($query_usuario)==1){
+            $usuario=array(
+                'id' => $query_usuario[0]['id'],
+                'nombre' => $query_usuario[0]['nombre'],
+                'id_tipo' => $query_usuario[0]['id_tipo_usuario']);
             return $usuario;
         }
         else{
             return NULL;
 	   }
-	    
 	}
-	public function prueba(){
-	    $r="no sirve";
-	    return $r;
-	}
-	public function verPlaylists($id){
-	    $playlists=$this->db->query('SELECT playlist.id as "id_playlist", playlist.nombre as "nombre_playlist", cancion.id AS "id_cancion", cancion.nombre AS "nombre_cancion", artista.nombre AS "artista_cancion", album.nombre AS "album_cancion", cancion.direccion AS "direccion_cancion" FROM playlist JOIN playlist_con_canciones ON playlist.id = playlist_con_canciones.id_playlist JOIN cancion ON cancion.id = playlist_con_canciones.id_cancion JOIN artista ON cancion.id_artista = artista.id JOIN album ON cancion.id_album = album.id WHERE playlist.id_usuario ='.$id )->result();
+	public function ver_playlists($id){
+	    $playlists=$this->db->query('SELECT playlist.id as "id_playlist", playlist.nombre as "nombre_playlist", cancion.id AS "id_cancion", cancion.nombre AS "nombre_cancion", artista.nombre AS "artista_cancion", album.nombre AS "album_cancion", cancion.direccion AS "direccion_cancion" FROM playlist JOIN playlist_con_canciones ON playlist.id = playlist_con_canciones.id_playlist JOIN cancion ON cancion.id = playlist_con_canciones.id_cancion JOIN artista ON cancion.id_artista = artista.id JOIN album ON cancion.id_album = album.id WHERE playlist.id_usuario ='.$id );
 
 	    if($this->validar_select($playlists)==1){
-            return $playlists;
+            return $playlists->result_array();
         }
         else{
             return NULL;
@@ -78,14 +79,14 @@ class Usuarios_model extends CI_Model{
 	   
 	}
 	public function id_playlists($id){
-	    $id_playlists=$this->db->query('SELECT id FROM playlist WHERE id_usuario = '.$id )->result();
-
+	    $id_playlists=$this->db->query('SELECT id FROM playlist WHERE id_usuario = '.$id );
+	    #campo de exito o no, sin result
 	    if($this->validar_select($id_playlists)==1){
-            return $id_playlists;
+            return $id_playlists->result_array();
         }
         else{
             return NULL;
-	   }
+	    }
 	   
 	}
 

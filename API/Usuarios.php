@@ -17,13 +17,13 @@ class Usuarios extends REST_Controller {
 
     }
 
-    public function crear_respuesta($codigo, $mensaje, $data){
+    private function crear_respuesta($codigo, $mensaje, $data){
         $respuesta = array('codigo' => $codigo,
                             'mensaje' => $mensaje,
                             'data' => $data);
         return $respuesta;
     }
-    public function validar_parametros_get($nombre,$contrasenia){
+    private function validar_parametros_get($nombre,$contrasenia){
         if(!empty($nombre) && !empty($contrasenia)){
             return  1;
         }
@@ -31,7 +31,7 @@ class Usuarios extends REST_Controller {
             return 0;
         }
     }
-    public function validar_parametros_post($nombre, $contrasenia, $id_tipo){
+    private function validar_parametros_post($nombre, $contrasenia, $id_tipo){
         if(!empty($nombre) && !empty($contrasenia) && !empty($id_tipo)){
         //if($nombre!=NULL && $contrasenia!=NULL && $id_tipo!=NULL){
             return  1;
@@ -40,28 +40,33 @@ class Usuarios extends REST_Controller {
             return 0;
         }
     }   
-public function ver_tipo_usuario($usuario){
-    $id_tipo_usuario=$usuario['id_tipo_usuario'];
-    if($id_tipo_usuario == 1){
-        return "Administrador";
+    private function ver_tipo_usuario($usuario){
+        $id_tipo=$usuario['id_tipo'];
+        if($id_tipo == 2){
+            return "usuario";
+        }
+        else{
+            return "administrador";
+        }
     }
-    elseif($id_tipo_usuario == 2){
-        return "Usuario";
+    private function parametros_definidos_get($nombre, $contrasenia){
+        if (isset($nombre, $contrasenia)) {
+            return "login";
+        }elseif(is_null($nombre) && is_null($contrasenia)){
+            return "sin_parametros";
+        }else{
+            return "no_implementado";
+        }
     }
-    else{
-        return 0;
+    private function parametros_definidos_post($nombre, $contrasenia, $id_tipo){
+        if (isset($nombre, $contrasenia, $id_tipo)) {
+            return "crear";
+        }else{
+            return"sin_parametros";
+        }
     }
-}
-public function parametros_definidos_get($nombre, $contrasenia){
-    if (isset($nombre, $contrasenia)) {
-        return "login";
-    }else{
-        return "sin parametros";
-    }
-}
-public function mandar_respuesta($respuesta){
-    return $this->response($respuesta);
-}
+
+
 /*************************** GET usuarios ********************** */
     public function usuarios_get() {
         /*$respuesta=[
@@ -78,25 +83,28 @@ public function mandar_respuesta($respuesta){
             #Validamos si no estan vacios
             case "login":
                 if($this->validar_parametros_get($nombre,$contrasenia)==1){
+                
+
+
                     #(parametros validos) los parametros estan definidos y contienen algo
                     #Hacemos select a la tabla usuario
                     $usuario=$this->Usuarios_model->login($nombre,$contrasenia);
                     #checamos el exito del query
-                    if(isset($usuario)){
+                    if(!is_null($usuario)){
                         #exito del query
-                        if($this->ver_tipo_usuario($usuario) == "Usuario"){
+                        if($this->ver_tipo_usuario($usuario) == "usuario"){
                             #es usuario
                             #veo cuantos playlists tiene
                             $id_playlists=$this->Usuarios_model->id_playlists($usuario['id']);
 
-                            if (isset($id_playlists)) {
-                                #exito del query
+                            if (!is_null($id_playlists)) {
+                                #exito del query, debe ser diferente de null
                            
-                                if(Count($id_playlists) > 0){
+                                if(count($id_playlists) > 0){
                                     #Tiene al menos una playlists, le doy formato a la respuesta
-                                    $playlists=$this->Usuarios_model->VerPlaylists($usuario['id']);
+                                    $playlists=$this->Usuarios_model->ver_playlists($usuario['id']);
                                     #checamos el exito del query
-                                    if(isset($playlists)){
+                                    if(!is_null($playlists)){
 
                                         /*$usuario=[
                                             "id"=>$usuario['id'],
@@ -108,32 +116,33 @@ public function mandar_respuesta($respuesta){
                                         $usuario['id_playlists'] = $id_playlists;
                                         $usuario['playlists'] = $playlists;
                                         #creo la respuesta
-                                        $respuesta=$this->crear_respuesta(200,"usuario y tiene playlist",$usuario);
+                                        $respuesta=$this->crear_respuesta(200,"tipo usuario y tiene playlist",$usuario);
+                                        #mejorar mensajes
                                     }else{
                                         #falla query
-                                        $respuesta=$this->crear_respuesta(404,"error en la consulta",[]);
+                                        $respuesta=$this->crear_respuesta(404,"error en la consulta de las playlists",[]);
                                     }
                                 
                                 }
                                 else{ #No tiene playlists
-                                    $respuesta=$this->crear_respuesta(204,"usuario y no tiene playlist",$usuario);
+                                    $respuesta=$this->crear_respuesta(204,"tipo usuario y no tiene playlist",$usuario);
                                    
                                 }
                             } 
                             else {
                                 #falla query
-                                $respuesta=$this->crear_respuesta(404,"error en la consulta",$usuario);
+                                $respuesta=$this->crear_respuesta(404,"error en la consulta de los ids de las playlists",$usuario);
                             }
                         }
                             else { #es Administrador
                                 
-                                $respuesta=$this->crear_respuesta(200,"Administrador",$usuario);
+                                $respuesta=$this->crear_respuesta(200,"tipo administrador",$usuario);
                                
                             }
                     
                     }
                     else {#falla query
-                        $respuesta=$this->crear_respuesta(404,"error en la consulta",[]);
+                        $respuesta=$this->crear_respuesta(404,"error en la consulta del usuario",[]);
                     }
                 }
                 else { #falla de los parametros
@@ -141,18 +150,23 @@ public function mandar_respuesta($respuesta){
                 }
                 break;
 
-            default:
+            case "sin_parametros":
                 $usuarios=$this->Usuarios_model->usuarios();
-                if (isset($usuarios)) {
+                //$usuarios=$this->Usuarios_model->login("David", "123");
+                if (!is_null($usuarios)) {
                     #exito query
                     $respuesta=$this->crear_respuesta(200,"Usuarios Encontrados", $usuarios);
                 } else{
                     #query falla
-                    $respuesta=$this->crear_respuesta(404,"error en la consulta", []);
-                } 
+                    $respuesta=$this->crear_respuesta(404,"error en la consulta de los usuarios", []);
+                }
+                break;
+
+            default:
+                 $respuesta=$this->crear_respuesta(200, "No implementado", []); 
         }
 
-    $this->mandar_respuesta($respuesta);
+    $this->response($respuesta);
                
     }
 
@@ -161,44 +175,48 @@ public function mandar_respuesta($respuesta){
         $nombre = $this->post('nombre');
         $contrasenia = $this->post('contrasenia');
         $id_tipo = $this->post('id_tipo');
+        $opcion = $this->parametros_definidos_post($nombre, $contrasenia, $id_tipo);
 
-        if (isset($nombre, $contrasenia, $id_tipo)) {
-        #parametros definidos    
-            if($this->validar_parametros_post($nombre,$contrasenia,$id_tipo)==1){
-                #parametros validos
-                $existe_nombre = $this->Usuarios_model->existe_nombre($nombre);
-                
-                if (isset($existe_nombre)){
-                    #exito del query
-                    if (isset($existe_nombre->id)) {
-                        #existe usuario con ese nombre
-                        $respuesta = $this->crear_respuesta(200, 'usuario existe', []);
-                    } else {
-                        #no existe usuario con ese nombre
-                        $insert = $this->Usuarios_model->insertar_usuario($nombre, $contrasenia, $id_tipo);
-                        #se hace el insert
-                        if ($insert == TRUE) {
-                            #exito query
-                            $respuesta = $this->crear_respuesta(201, 'usuario agregado', []);
+        switch ($opcion){
+            case "crear":
+            #parametros definidos    
+                if($this->validar_parametros_post($nombre,$contrasenia,$id_tipo)==1){
+                    #parametros validos
+                    $existe_nombre = $this->Usuarios_model->existe_nombre($nombre);
+                    
+                    if (isset($existe_nombre)){
+                        #exito del query
+                        if (isset($existe_nombre->id)) {
+                            #existe usuario con ese nombre
+                            $respuesta = $this->crear_respuesta(200, 'usuario existe', []);
                         } else {
-                            #exito falla
-                            $respuesta = $this->crear_respuesta(202, 'No se pudo agregar el usuario', []);
+                            #no existe usuario con ese nombre
+                            $insert = $this->Usuarios_model->insertar_usuario($nombre, $contrasenia, $id_tipo);
+                            #se hace el insert
+                            if ($insert == 1) {
+                                #exito query
+                                $respuesta = $this->crear_respuesta(201, 'usuario agregado', []);
+                            } else {
+                                #exito falla
+                                $respuesta = $this->crear_respuesta(202, 'No se pudo agregar el usuario', []);
+                            }
                         }
+                    } else {
+                        #query falla
+                        $respuesta = $this->crear_respuesta(404, 'Error en la consulta', []);
                     }
+
                 } else {
-                    #query falla
-                    $respuesta = $this->crear_respuesta(404, 'Error en la consulta', []);
+                    #parametros no validos
+                    $respuesta = $this->crear_respuesta(400, 'Error en los parametros', []);
                 }
+                break;
 
-            } else {
-                #parametros no validos
-                $respuesta = $this->crear_respuesta(400, 'Error en los parametros', []);
-            }
-
-        } else {
-            #parametros no definidos
-            $respuesta = $this->crear_respuesta(400, 'No implementado', []);
+            default:
+                #parametros no definidos
+                $respuesta = $this->crear_respuesta(400, 'No implementado', []);
         }
+
         $this->response($respuesta);
     }
 
@@ -222,29 +240,29 @@ public function mandar_respuesta($respuesta){
         $this->response($respuesta);
     }
     public function usuarios_put(){
-        $id=$_GET['id'];
-        $nombre=$_GET['nombre'];
-        $contrasenia= $_GET['contrasenia'];
-        $id_tipo_usuario=$_GET['tipo_usuario'];
+        $id=$this->post('id');
+        $nombre=$this->post('nombre');
+        $contrasenia=$this->post('contrasenia');
+        $id_tipo=$this->post('id_tipo');
          #Revisamos si estan definidos
-         if(isset($id) && isset($nombre)&& isset($contrasenia)&& isset($id_tipo_usuario) ){
+         if(isset($id) && isset($nombre)&& isset($contrasenia)&& isset($id_tipo) ){
             if($id != NULL){
-                    if($nombre == NULL && $contrasenia == NULL && $id_tipo_usuario == NULL){
+                    if($nombre == NULL && $contrasenia == NULL && $id_tipo == NULL){
                         $respuesta=[
                             'codigo' => REST_Controller::HTTP_OK,
                             "mensaje" => "No se moifico nada",
                             "usuario" =>[]
                         ];
                     }
-                    elseif ($nombre == NULL && $contrasenia == NULL && $id_tipo_usuario != NULL) {
-                        $Usuario_modificado=$this->Usuarios_model->ModificarT($id_tipo_usuario,$id);
+                    elseif ($nombre == NULL && $contrasenia == NULL && $id_tipo != NULL) {
+                        $Usuario_modificado=$this->Usuarios_model->ModificarT($id_tipo,$id);
                         $respuesta=[
                             'codigo' => REST_Controller::HTTP_OK,
                             "mensaje" => "usuario Modificado ",
                             "usuario" =>$Usuario_modificado
                         ];
                     }
-                    elseif($nombre == NULL && $contrasenia != NULL && $id_tipo_usuario == NULL){
+                    elseif($nombre == NULL && $contrasenia != NULL && $id_tipo == NULL){
                         $Usuario_modificado=$this->Usuarios_model->ModificarC($contrasenia,$id);
                         $respuesta=[
                             'codigo' => REST_Controller::HTTP_OK,
@@ -252,7 +270,7 @@ public function mandar_respuesta($respuesta){
                             "usuario" =>$Usuario_modificado
                         ];
                     }
-                    elseif($nombre != NULL && $contrasenia == NULL && $id_tipo_usuario == NULL){
+                    elseif($nombre != NULL && $contrasenia == NULL && $id_tipo == NULL){
                         $Usuario_modificado=$this->Usuarios_model->ModificarN($nombre,$id);
                         $respuesta=[
                             'codigo' => REST_Controller::HTTP_OK,
@@ -260,7 +278,7 @@ public function mandar_respuesta($respuesta){
                             "usuario" =>$Usuario_modificado
                         ];
                     }
-                    elseif($nombre != NULL && $contrasenia != NULL && $id_tipo_usuario == NULL){
+                    elseif($nombre != NULL && $contrasenia != NULL && $id_tipo == NULL){
                         $Usuario_modificado=$this->Usuarios_model->ModificarNC($nombre,$contrasenia,$id);
                         $respuesta=[
                             'codigo' => REST_Controller::HTTP_OK,
@@ -268,24 +286,24 @@ public function mandar_respuesta($respuesta){
                             "usuario" =>$Usuario_modificado
                         ];
                     }
-                    elseif($nombre != NULL && $contrasenia == NULL && $id_tipo_usuario != NULL){
-                        $Usuario_modificado=$this->Usuarios_model->ModificarNT($nombre,$id_tipo_usuario,$id);
+                    elseif($nombre != NULL && $contrasenia == NULL && $id_tipo != NULL){
+                        $Usuario_modificado=$this->Usuarios_model->ModificarNT($nombre,$id_tipo,$id);
                         $respuesta=[
                             'codigo' => REST_Controller::HTTP_OK,
                             "mensaje" => "usuario Modificado ",
                             "usuario" =>$Usuario_modificado
                         ];
                     }
-                    elseif($nombre == NULL && $contrasenia != NULL && $id_tipo_usuario != NULL){
-                        $Usuario_modificado=$this->Usuarios_model->ModificarCT($contrasenia,$id_tipo_usuario,$id);
+                    elseif($nombre == NULL && $contrasenia != NULL && $id_tipo != NULL){
+                        $Usuario_modificado=$this->Usuarios_model->ModificarCT($contrasenia,$id_tipo,$id);
                         $respuesta=[
                             'codigo' => REST_Controller::HTTP_OK,
                             "mensaje" => "usuario Modificado ",
                             "usuario" =>$Usuario_modificado
                         ];
                     }
-                    elseif($nombre != NULL && $contrasenia != NULL && $id_tipo_usuario != NULL){
-                        $Usuario_modificado=$this->Usuarios_model->ModificarNCT($nombre,$contrasenia,$id_tipo_usuario,$id);
+                    elseif($nombre != NULL && $contrasenia != NULL && $id_tipo != NULL){
+                        $Usuario_modificado=$this->Usuarios_model->ModificarNCT($nombre,$contrasenia,$id_tipo,$id);
                         $respuesta=[
                             'codigo' => REST_Controller::HTTP_OK,
                             "mensaje" => "usuario Modificado ",
