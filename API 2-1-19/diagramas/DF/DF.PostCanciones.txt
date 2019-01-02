@@ -1,0 +1,117 @@
+@startuml
+title Crear Cancion
+
+start
+:checar_parametros_definidos_post(nombre,artista,album,id_genero,direccion);
+if(nombre: definido \n artista: definido\n album: definido\n id_genero: definido) then (si)
+
+:validar_parametros_post(nombre,artista,album,id_genero,direccion);
+
+note left:nombre: no es vacio \n album: no es vacio \n artista: no es vacio \n id_genero >0\n direccion: no es vacio
+
+if (Parametros validos?) then (si)
+	:artista_existe=SELECT id FROM artista WHERE nombre = "artista";
+	 note left: se obtine el id del artista para saber si existe
+        :validar_select_post(artista_existe);
+         note left: se valida si funciona el select asi \n regresa 1 si existe, 2 si no existe, 0 si falla
+	if (Query exitoso?) then (Si)
+		if (Exite el artista?) then (si)
+			:album_existe=SELECT id FROM album WHERE nombre = "album";
+			 note left: se obtine el id del artista para saber si existe
+                        :validar_select_post(album_existe);
+                        note left: se valida si funciona el select asi \n regresa 1 si existe, 2 si no existe, 0 si falla,
+
+                if(Query exitoso?) then (si)
+                    if (Existe Album?) then (si) 
+                      :cancion_existe=SELECT id FROM cancion WHERE nombre="cancion";
+			 note left: se obtine el id de la cancion para saber si existe
+                        :validar_select_post(cancion_existe);
+                        note left: se valida si funciona el select asi \n regresa 1 si existe, 2 si no existe, 0 si falla
+
+               if (Query exitoso?) then (si)
+                if(Existe Cancion?) then (si)
+                        :crear_respuesta(200, "Cancion Existe", []);
+                 else (no) 
+                         :cancion_nueva=INSERTO INTO cancion (nombre,id_album,id_artista,id_genero,direccion)\n VALUES("nombre",\n (SELECT id FROM album WHERE nombre = "album"),\n (SELECT id FROM artista WHERE nombre = "artista"),id_genero,direccion );
+note left: Se inserta la cancion solamente
+               :validar_insert(cancion_nueva);
+if(Query Exitoso?) then (si)
+
+ :crear_respuesta(201, "Cancion Agregada");
+
+
+else(no)
+ :crear_respuesta(202, "Cancion No se puede agregar");
+endif
+                 endif
+               else (no)
+:crear_respuesta(404, "Error en la consulta", []);
+               endif
+                else (no)
+              :album_nuevo=INSERT INTO album(nombre, id_artista)\n VALUES("Album", (SELECT id FROM artista WHERE nombre="artista"));
+			 :validar_insert(album_nuevo);
+if (Query Exitoso?) then (si)
+ 
+ :cancion_nueva=INSERTO INTO cancion (nombre,id_album,id_artista,id_genero,direccion)\n VALUES("nombre",\n (SELECT id FROM album WHERE nombre = "album"),\n (SELECT id FROM artista WHERE nombre = "artista"),id_genero,direccion );
+:validar_insert(cancion_nueva);
+
+if(Query Exitoso?) then (si)
+ :crear_respuesta(201, "Cancion Agregada",[]);
+else(no)
+ :crear_respuesta(202, "Cancion No se puede agregar",[]);
+endif
+
+else (no)
+ :crear_respuesta(202, "Album No se puede agregar",[]);
+endif
+   endif
+	         else (No)
+			
+:crear_respuesta(400, "Error en el query",[]);
+			        
+                         
+               
+		endif
+	else (No)
+		:artista_nuevo=INSERT INTO artista(nombre) VALUES("artista") ;
+                :validar_insert(artista_nuevo);
+                if (Query exitoso?) then (si)
+
+:album_nuevo=INSERT INTO album(nombre, id_artista) VALUES ( "album", \n (SELECT id FROM artista WHERE nombre = "artista"));
+:validar_insert(album_nuevo);
+if(Query exitoso?) then (si)
+
+:cancion_nueva=INSERTO INTO cancion (nombre,id_album,id_artista,id_genero,direccion)\n VALUES("nombre",\n (SELECT id FROM album WHERE nombre = "album"),\n (SELECT id FROM artista WHERE nombre = "artista"),id_genero,direccion );
+:validar_insert(cancion_nueva);
+
+if(Query exitoso?) then (si)
+:crear_respuesta(201, "Cancion Agregada", []);
+
+else (no)
+:crear_respuesta(202, "No se peude agregar cancion", []);
+
+endif
+else (no)
+:crear_respuesta(202, "No se peude agregar cancion", []);
+endif
+else(no)
+:crear_respuesta(400, "Error en el query", []);
+endif
+               
+
+
+	endif
+else (no)
+	:crear_respuesta(404, "Error en la consulta", []);
+endif
+else (no)
+:crear_respuesta(400, " Error en los parametros", []);
+
+endif
+else (default)
+:crear_respuesta(404, " No implementado", []);
+endif
+:response(respuesta);
+
+stop
+@enduml

@@ -1,0 +1,47 @@
+@startuml
+title __PUT usuarios__
+start
+
+
+
+:parametros_definidos_put(id,nombre,contrasenia,id_tipo_usuario);
+note right: se muestra el caso en el que se modifican todos los parametros
+if(id: definido \n nombre: definido \n contrasenia: definido \n tipo_usuario: definido) then (si)
+:validar_parametros_put(id,nombre,contrasenia,tipo_usuario);
+
+floating note left
+Validar Que parametros estan llenos, el id no puede estar vacio
+ id:no vacio
+ nombre:puede ser vacio
+ contrasenia:puede ser vacio,
+ tipo_usuario:no puede ser vacio, debe ser un numero mayor que cero
+ Regresa un nuemero dependiendo que datos se van a modificar
+end note
+	if (nombre: contien algo \n contrasenia: contiene algo \n id_tipo:contiene algo) then (si)
+
+		:modificar_usuario=UPDATE usuario SET nombre="nombre", contrasenia="contrasenia", tipo_usuario="tipo_usuario" WHERE id=id ;
+		 note left: Hacer UPDATE a la tabla 'usuario',\n Solo se modifican los datos llenos\n *Se muestra el peor de los casos
+                :validar_update_put($modificiar_usuario);
+		if (Query exitoso?) then (si)
+			:crear_respuesta(200, "Usuario actualizado", []);
+		else (no)
+			:crear_respuesta(400, "No se puede actualizar", []);
+floating note right
+crear_respuesta() genera el arreglo Respuesta=[
+    codigo
+    mensaje
+    data[]
+]
+con los parametros que se le pasan.
+end note
+		endif
+	else (default )
+		:crear_respuesta(200, "No se modifico nada", []);
+	endif
+	
+else (default)
+:crear_respuesta(404, "No se encontraron Datos", []);
+endif
+:reponse(Repuesta);
+stop
+@enduml

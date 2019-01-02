@@ -1,0 +1,45 @@
+@startuml
+title __DELETE usuarios__
+start
+
+
+:checar_parametros_definidos_delete(id);
+if(id:definido) then (si)
+:validar_parametros_delete(id);
+floating note left
+ Parametros:
+	id>0
+ Si esto se cumple regresa 1,
+ de lo contrario manda 0
+end note
+	if (Parametros Validos?) then (si)
+		:delete_usuario=UPDATE usuarios SET activo=0\nWHERE id='id';
+		 note left: Borrado logico activo=0
+        :validar_update(delete_usuario);
+        note left:se valida por el numero de filas afectadas\nse manda 1 si se afecto una fila\nsi no se afecto ninguna se manda 0
+		if (Query exitoso?) then (si)
+						:crear_respuesta(200, "usuario eliminado", []);
+floating note right
+			crear_respuesta() genera el arreglo respuesta=[
+			    codigo
+			    mensaje
+			    data[]
+				]
+			con los parametros que sele pasan.
+		end note
+				else (no)
+					:crear_respuesta(400, "error en el update", []);
+				
+					endif
+	else (No)
+		:crear_respuesta(400, "error en los parametros", []);
+	endif
+	
+else (default)
+
+:crear_respuesta(404, "no implementado", []);
+
+endif
+:response(respuesta);
+stop
+@enduml

@@ -1,0 +1,58 @@
+@startuml
+title __POST usuarios__
+start
+
+:checar_parametros_definidos_post(nombre, contrasenia, id_tipo);	
+if(nombre: definido \ncontrasenia: definido \n id_tipo: definido) then (si)
+:validar_parametros_post(nombre,contrasenia,id_tipo);
+floating note left
+nombre:no es vacio
+contrasenia:no es vacio
+id_tipo>0
+
+end note
+	if (Parametros Validos?) then (si)
+
+		:existe_nombre=SELECT id FROM usuarios WHERE nombre=nombre;
+		 note left: Revisar si existe un usuario con el mismo nombre.
+		:validar_select(existe_nombre);
+		note left:regresa 0 si es query fallo\nregresa 1 si el nombre existe\nregresa 2 si no existe el nombre
+		if (Query exitoso?) then (si)
+			if (Existe Usuario?) then (si)
+				:crear_respuesta(200, "ese nombre existe", []);
+				floating note right
+					crear_respuesta() genera el arreglo respuesta=[
+					    codigo
+					    mensaje
+					    data[]
+					]
+					con los parametros que se le pasan.
+				end note
+			else (no)
+				:insert=INSERT INTO usuarios(nombre,contrasenia,id_tipo_usuario) \n VALUES(nombre,contrasenia,id_tipo);
+				note right
+					Se hace el INSERT a la tabla usuario
+                    con los datos obtenidos.
+      			        end note
+      			:validar_insert(insert);
+      			note left: regresa 1 si el query fue exitoso\nde lo contrario se manda 0
+				if (Query exitoso? ) then (si)
+					:crear_respuesta(201, "usuario agregado con exito", []);
+				else (no)
+					:crear_respuesta(202, "no se pudo agregar el Usuario", []);
+				endif		
+			endif
+
+		else (no)
+			:crear_respuesta(404, "error en la consulta del nombre", []);
+		endif
+	else (no)
+		:crear_respuesta(400, "error en los parametros", []);
+	endif
+	
+else (default)
+:crear_respuesta(404, "no implementado", []);
+endif
+:response(respuesta);
+stop
+@enduml

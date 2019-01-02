@@ -1,0 +1,25 @@
+@startuml
+title __GET canciones__
+start
+
+:checar_parametros_definidos_get(id,nombre,artista,album,id_genero);
+if(id:definido y >0\nnombre esta definido \n artista esta definido \n album esta definido\n id_genero esta definido) then (si)
+:crearRespuesta(404, "No implementado", data=[]);
+	
+else (default)
+:canciones=SELECT cancion.id, cancion.nombre as "cancion" ,\n album.nombre as "album", artista.nombre as "artista", cancion.direccion as "direccion" \n FROM cancion \n INNER JOIN artista ON artista.id = cancion.id_artista\n INNER JOIN album ON album.id =cancion.id_album;
+note right
+se obtiene id y nombre de la cancion,
+el nombre del album y artista al que pertenece,
+asi como la direcion del archivo
+end note
+:validar_select(canciones);
+if (query Exitoso?) then (si)
+:crear_respuesta(200, "Canciones Encontradas",canciones);
+else (no)
+:crear_respuesta(404, "Error en la consulta", []);
+endif
+endif
+:response(respuesta);
+stop
+@enduml

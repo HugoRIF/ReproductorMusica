@@ -1,0 +1,82 @@
+@startuml
+title __POST playlists__
+start
+:checar_parametros_definidos_post(id_usuario, nombre_playlist, id_playlist, id_cancion);
+if (solo id_usuario:definido y nombre_playlist:definido) then (si)
+	:validar_parametros_post(id_usuario, nombre_playlist);
+	note left: id_usuario: no vacio y >0\nnombre_playlist: no vacio
+	if (Parametros Validos?) then (si)
+		:numero_playlists=SELECT COUNT(id) AS "numero_playlists" FROM playlists WHERE id_usuario = id_usuario;
+		 floating note left 
+			 Flujo para crear una playlist
+			 ====
+			 Si el query es exitoso se obtiene el numero de playlist del usuario
+			 si no regresara 0			 
+		end note
+		:validar_select(numero_playlists);
+		if(query exitoso?) then (si)
+			if (numero_playlists < 2 ?) then (si)
+				:playlist=INSERT INTO playlists (nombre, numero_de_canciones, id_usuario)\n VALUES (nombre_playlist, 0, id_usuario) ;
+				floating note left
+					Se realiza en una transaccion, si se realizo correctamente regresa 1
+					de lo contrario regresa 0
+
+					Se crea la playlists y regresa su id
+					playlist_creada=[id, nombre_playlist]
+				end note
+				if (Query exitoso?) then (si)
+					:crear_respuesta(201, "playlist creada", playlist_creada);
+					floating note right
+						crear_respuesta() genera el arreglo respuesta=[
+					    	codigo
+					    	mensaje
+					    	data[]
+							]
+						con los parametros que se le pasan.
+					end note
+				else (no)
+					:crear_respuesta(202, "error al crear la playlist", []);
+				endif
+			else (no)
+				:crear_respuesta(200, "no puedes crear mas playlists", []);
+			endif
+		else (no)
+			:crear_respuesta(404, "error en la consulta del numero de playlists", []);
+		endif
+	else (no)
+		:crear_respuesta(400, "error en los parametros", []);
+	endif
+elseif (solo id_playlist:definido e id_cancion:definido) then (si)
+	:validar_parametros_post(id_playlist, id_cancion);
+	note right: id_playlist: no vacio y >0\nid_cancion: no vacio y >0\nid_cancion puede tener mas de un id
+	if (Parametros validos?) then (si)
+		:cancion=INSERT INTO playlist_con_canciones (id_playlist, id_cancion)\n VALUES (id_playlist, id_cancion);
+		note left
+			Flujo para agregar cancion(es) a una playlist
+			====
+			se crea cancion_agregada = [id_playlist, id_cancion]
+		end note
+		:validar_insert(cancion);
+		if (Query exitoso?) then (si)
+			:crear_respuesta(201, "cancion(es) agregada(s) con exito", cancion_agregada);
+			floating note right
+				crear_respuesta() genera el arreglo respuesta=[
+			    	codigo
+			    	mensaje
+			    	data[]
+					]
+				con los parametros que se le pasan.
+			end note
+		else (no)
+			:crear_respuesta(202, "error al agregar la(s) cancion(es)", []);
+		endif
+	else (no)
+		:crear_respuesta(400, "error en los parametros", []);
+	endif
+else (default)
+	:crear_respuesta(404, "no implementado", []);
+endif
+
+:response(espuesta);
+stop
+@enduml

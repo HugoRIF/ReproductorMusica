@@ -1,0 +1,113 @@
+@startuml
+title GET usuarios
+start
+
+:checar_parametros_definidos_get(nombre, contrasenia);
+if(nombre: definido \n y contrasenia: definido) then (si)
+:validar_parametros_get(nombre,contrasenia);
+note left
+	nombre: no es vacio
+	contrasenia: no es vacio
+end note
+	if (Parametros Validos?) then (si)
+
+		:query_usuario=SELECT id,nombre, id_tipo_usuario FROM usuarios WHERE nombre="nombre" AND contrasenia="contrasenia";
+		 note left:Del query se obtiene: id, nombre, id_tipo_usuario\n se crea usuario = [id, nombre, id_tipo_usuario]
+		:validar_select_usuario(query_usuario);
+		note left:se valida el exito del query y que los datos obtenidos sean:\nid>0, id_tipo_usuario>0, nombre:no vacio\nsi se cumple lo anterior regresa el arreglo usuario\nde lo contrario regresa 0
+
+		if (Query exitoso?) then (si)
+			:ver_tipo_usuario(usuario);
+			if (Usuario?) then (si)
+				:id_playlists=SELECT id FROM playlists WHERE id_usuario=usuario[id];
+				note right: se obtienen los id\nde los playlists;
+				:validar_select(id_playlists);
+				note left:se valida que sqlstate del query sea 00000\nentonces el query se realizo con exito
+				if(Query exitoso?) then (si)
+					if(el tamaño de id_playlists es >0?) then (si)
+					:playlists = SELECT playlists.id, playlists.nombre,  COUNT(*) AS numero_de_canciones, JSON_ARRAYAGG(JSON_OBJECT("id",canciones.id,"nombre",canciones.nombre,"artista",artistas.nombre,"album",albums.nombre,
+					"direccion",canciones.direccion)) AS "canciones"
+				  FROM playlist_con_canciones
+				    INNER JOIN playlists ON playlists.id = playlist_con_canciones.id_playlist
+				    INNER JOIN canciones ON canciones.id = playlist_con_canciones.id_cancion
+				    INNER JOIN artistas ON artistas.id = canciones.id_artista
+				    INNER JOIN albums ON albums.id = canciones.id_album
+				  WHERE
+				    playlists.id_usuario = "'.$id.'"
+				  GROUP BY playlists.id
+					note right
+						Se obtienen las canciones de cada playlists que tenga el usuario, se obtiene:
+						playlists = [ [ id, nombre, numero_de_canciones, canciones = [ 
+                                    [id, nombre, artista, album, direccion], [ ...]]]
+                                  , [ ...]]
+						Esto depende de cuantas playlist tenga el usuario.
+
+						Se valida en el modelo el query
+
+					end note
+					:validar_select(playlists);
+					if (Query exitoso? ) then (si)
+							:crear_respuesta(200, "tipo usuario y tiene playlist", usuario);
+							floating note right
+								Se agrega la informacion de las playlists al usuario:
+								usuario = [id,nombre, id_tipo,
+										playlists=[ [ id, nombre, numero_de_canciones, canciones = [ 
+										[id, nombre, artista, album, direccion], ... ]], [...]]
+									]
+								]
+								crear_respuesta() genera el arreglo respuesta=[
+								    codigo
+								    mensaje
+								    data[]
+								]
+								con los parametros que se le pasan.
+							end note
+						else (no)
+							:crear_respuesta(404, "error en la consulta de las canciones", usuario);
+						endif
+
+					else (no)
+						:crear_respuesta(200, "tipo usuario y no tiene playlist", usuario);
+					endif
+				else (no)
+					:crear_respuesta(404, "error en la consulta de las playlists", usuario);
+				endif 
+			else (no)
+				:crear_respuesta(200, "tipo administrador", usuario);
+			endif
+		else (no)
+			:crear_respuesta(404, "error en la consulta del usuario", []);
+		endif
+	else (no)
+		:crear_respuesta(400, "error en los parametros", []);
+	endif
+elseif(nombre:no definido \n y contrasenia:no definido) then (si)
+	:usuarios=SELECT id,nombre,id_tipo_usuario,activo FROM usuarios;
+	note right
+	Obtiene: id, nombre, id_tipo_usuario
+    se crea usuarios = [
+                 [id, nombre, id_tipo_usuario, activo],
+             	 [id, nombre, id_tipo_usuario, activo],
+        		...]
+    Se valida el query
+	end note
+	:validar_select(usuarios);
+	if (Query exitoso?) then (si)
+		:crear_respuesta(200, "usuarios encontrados", usuarios);
+		floating note right
+			crear_respuesta() genera el arreglo respuesta=[
+			    codigo
+			    mensaje
+			    data[]
+				]
+			con los parametros que se le pasan.
+		end note
+	else (no)
+		:crear_respuesta(404, "error en la consulta de los usuarios", []);
+	endif
+else (default)
+	:crear_respuesta(200, "no implementado", []);
+endif
+:response(respuesta);
+stop
+@enduml

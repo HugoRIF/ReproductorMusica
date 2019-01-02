@@ -1,0 +1,178 @@
+@startuml
+title __Login__
+actor Usuario
+participant "Aplicacion Web" as AW
+participant API
+database BD
+
+
+activate Usuario #DarkSalmon
+activate AW
+
+
+Usuario -> AW : Abre Aplicacion Web
+AW -> Usuario : Muestra vista "Login"
+Usuario -> AW : Ingresa: nombre del usuario, Contraseña y da click en ingresar
+AW -> AW : validar_datos_login(nombre,contrasenia)
+
+ note right
+  nombre: validar que no este vacio
+  contrasenia: validar que no este vacio
+ end note
+activate AW #DarkSalmon
+group Datos de login no estan vacios
+
+ AW->API : GET .../usuarios?nombre="nombre"&contrasenia="contrasenia"
+ activate API
+
+ API->API: validar_parametros_get(nombre,contrasenia)
+note right
+  nombre: validar que no este vacio
+  contrasenia: validar que no este vacio
+ end note
+group parametros Validos
+activate API #DarkSalmon
+   API->BD: SELECT'usuarios'
+ 
+   note right
+  Se hace un SELECT a usuarios
+  atributos:
+   *nombre
+   *contrasenia 
+   ====
+   Respuesta Deseada (result_query):
+    *id
+    *nombre
+    *id_tipo_usuario (Tipo de Usuario 1 ó 2)
+ end note
+   activate BD
+   BD->BD: validar_select_usuario(result_query)
+   BD->API:  result_query = [id, nombre,id_tipo_usuario]
+note left: usuario = result_query
+   deactivate BD
+ API->API: query exitoso?
+   group Query Exitoso
+
+    API -> API: ver_tipo_usuario(usuario[id_tipo_usuario])
+    group Es usuario
+       activate API
+       
+      API -> BD: Hacer Query
+      activate BD
+      note left: SELECT id 'playlist'\n obtener: id's de las playlist del usuario
+      BD->BD:validar_select(id_playlists)
+      BD->API: id_playlists
+      deactivate BD
+      API->API:query od_playlists exitoso?
+        group Exito query
+          API->API:tamaño de id_playlists es > 0
+          group si 
+              API->BD: Hacer query
+              activate BD
+              note left: playlists = result_query_playlist
+
+              note right
+                  JOIN a las tablas 'playlists', 'canciones', 'playlist_con_canciones','artistas','albums'
+                  Obtener:
+              *playlists.id
+              *playlists.nombre
+              *canciones.id
+              *canciones.nombre
+              *canciones.direccion
+              *artistas.nombre
+              *albums.nombre
+                   
+              ===
+                  Se espera obtener el resultado del query de la siguiente forma:
+                    playlists = [ [ id, nombre, numero_de_canciones, canciones = [ 
+                                    [id, nombre, artista, album, direccion], [ ...]]]
+                                  , [ ...]]
+                end note
+              BD->BD:validar_select(playlists)
+              BD->API:playlists
+              deactivate BD
+              API->API: query platlist exitoso?
+              activate API #DarkSalmon
+              group Query Playlist Exitoso
+
+                group #LightBlue metodo crear_respuesta
+                     
+                API->API: arreglo_respuesta=[ \n codigo=200, \n mensaje=tipo usuario y tiene playlist, \n data=[usuario, playlists ] \n  ]
+                end
+              else Query Playlist Falla
+                group #LightBlue metodo crear_respuesta
+           
+                  API->API: arreglo_respuesta=[ \n codigo=404, \n mensaje=error en consulta de las playlists,\n data= usuario]
+                  
+                end
+              end
+          else No
+            group #LightBlue metodo crear_respuesta
+           
+              API->API: arreglo_respuesta=[ \n codigo=204, \n mensaje=tipo usuario y no tiene playlist,\n data= usuario]
+            end
+          end
+      else Query Falla
+        group #LightBlue metodo crear_respuesta
+             
+          API->API: arreglo_respuesta=[ \n codigo=404, \n mensaje=error en consulta de id playlists,\n data= usuario]
+          deactivate API
+        end
+      end
+      deactivate API
+
+    else Es administrador
+
+     group #LightBlue metodo crear_respuesta
+     API->API: arreglo_respuesta=[ codigo=200, \n mensaje="tipo administrador",  \n data = usuario ]
+end
+end
+   else Query Falla
+      group #LightBlue metodo crear_respuesta
+      API->API:  arreglo_respuesta=[codigo=404, \n mensaje="error en la consulta del usuario",  \n data = [] ])
+end
+   end
+deactivate API
+else Parametros invalidos
+  group #LightBlue metodo crear_respuesta
+  API->API:  arreglo_respuesta=[codigo=400, \n mensaje="error en los parametros",  \n data = [] ])
+end
+
+ end
+
+ API->AW: response(arreglo_respuesta)
+deactivate API
+ AW->AW: validar_codigo(response)
+deactivate AW
+  group Es codigo 200, el Usuario existe
+ 
+ AW->AW: ver_tipo_usuario(response[data][usuario[id_tipo_usuario])
+ 
+ group Es Administrador
+ AW->Usuario: Muestra vista "inicio" de Administrador
+ else Es Usuario 
+
+  AW -> AW: crear_usuario(response)
+  note right
+    Se crea:
+    usuario = [ id,
+         nombre,
+         id_tipo,
+    playlists = [ [ id, nombre, numero_de_canciones, canciones = [ 
+                [id, nombre, artista, album, direccion], [ ...]]]
+                , [ ...]]
+    Para mostrar la vista "Inicio Usuario"
+  end note
+
+  AW->Usuario: Muestra vista "Inicio Usuario"
+end
+else No es 200, usuario invalido
+  AW->Usuario: Muestra alert(response[mensaje]), muestra vista "login"
+end
+
+else Datos de login Vacios
+  AW->Usuario: Muestra alert("Ingresa el usuario/contraseña"), muestra vista "login"
+deactivate Usuario
+deactivate AW
+end
+@enduml
